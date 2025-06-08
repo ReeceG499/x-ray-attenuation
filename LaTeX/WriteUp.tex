@@ -6,6 +6,8 @@
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{pythonhighlight}
+\usepackage{float}
 
 \begin{document}
 \maketitle
@@ -15,7 +17,7 @@ I have chosen to simulate x-ray transmission through a digital phantom, using en
 \end{abstract}
 
 \section{Introduction}
-Computed tomography scans are a form of medical imagery that uses X-rays to  create images of the body. CT scans reconstruct cross sectional images of the body from multiple projections of X-ray attenuation through an object. In this project, I go through a large amount of the process of X-ray imaging: from simulating the incident X-rays using the python software toolkit spekpy, to simulating the x-ray attenuation and forming a spectogram, which I then use simple back projection to reconstruct the X-ray image.
+Computed tomography scans are a form of medical imagery that uses X-rays to  create images of the body. CT scans reconstruct cross sectional images of the body from multiple projections of X-ray attenuation through an object. In this project, I go through a large amount of the process of X-ray imaging: from simulating the incident X-rays using the python software toolkit spekpy, to simulating the x-ray attenuation and forming a spectogram, I then reconstruct the image using simple back projection.
 
 \section{Methods}
 
@@ -29,7 +31,7 @@ X-rays are produced when high kinetic energy electrons are accelerated towards a
   \caption{A X-ray tube}
   \label{fig:X-ray tube}
 \end{figure}
-Figure \ref{fig:X-ray tube} shows a diagram of a X-ray tube. \cite{Mason}
+Figure \ref{fig:X-ray tube} \cite{Mason} shows a diagram of a X-ray tube . Which helps to visualise the origin of the X-ray spectrum as electrons are emitted via thermionic emission and then accelerated toward a positively charged anode, where their interactions with the target produce both bremsstrahlung and characteristic radiation.
 
 \subsubsection{Attenuation of X-rays}
 As X-rays pass through matter, they are attenuated according to the Beer-Lambert law: 
@@ -50,6 +52,57 @@ I have included  $\mu$ to be energy dependent as this is what is observed in exp
 \mu(E) = \left(\frac{\mu}{\rho}\right) \cdot \rho
 \end{equation}
 using mass attenuation data from NIST and known material densities.
+
+\subsection{Investigating Beam Hardening}
+Beam hardening occurs during X-ray attenuation as higher energy (hard) X-rays penetrate dense materials more effectively than the low energy (soft) X-rays. This has the effect of shifting the peak of the bremsstrahlung radiation towards higher energies. Beam hardening clearly cannot occur for monochromatic X-rays so we can predict that the characteristic radiation will not harden.
+I used spekpy and matplotlib to generate a typical spectra from a Tungsten X-ray tube and plot for energies upto 150 keV. I used a 2mm Aluminium filter (common for x-ray tubes) to avoid getting very large peaks at low energies. We can use spekpys built in filter function for this but will also write our own filtering code shortly.
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{typicalxrayspectra.png}
+	\caption{X-ray Spectrum from a X-ray tube with a Tungsten target}
+  \label{fig:basespectra}
+\end{figure}
+
+In Figure \ref{fig:basespectra} we can clearly see the sharp characteristic peaks that correspond to Tungsten. Writing code for filtering using NIST data and interpolation to fit the number of data points required., 
+
+\begin{python}
+import pandas as pd
+from scipy.interpolate import interp1d
+
+# Load csv
+bone_data = pd.read_csv("bone.csv", names=["Energy_MeV", "Mu_Rho"], header=None)#
+
+# Convert energy to KeV
+bone_data["Energy_KeV"] = bone_data["Energy_MeV"] * 1000
+
+# Average out duplicates by grouping
+bone_data = bone_data.groupby("Energy_KeV", as_index=False).mean()
+
+# Convert to linear attenuation (mu = mu/rho * rho)
+bone_density = 1.85  # g/cm^3
+bone_data["Mu"] = bone_data["Mu_Rho"] * bone_density  # [cm^-1]
+mu = bone_data["Mu"].to_numpy()
+
+# Create interpolation function for attenuation coefficients
+mu_interp = interp1d(bone_data["Energy_KeV"], bone_data["Mu"], bounds_error=False, fill_value="extrapolate")
+
+mu_at_spectrum_energies = mu_interp(energies)
+
+thickness_cm = 0.5
+I0 = s.get_spk()
+
+I_filtered = I0 * np.exp(-mu_at_spectrum_energies * thickness_cm)
+\end{python}
+
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{beamhardening.png}
+	\caption{Comparing X-ray spectra before and after passing through 0.5cm of bone}
+  \label{fig:beamhardening}
+\end{figure}
+
+Figure \ref{fig:beamhardening} clearly shows beam hardening on the X-ray spectrum. The lower-energy (soft) X-rays are preferentially attenuated, resulting in a spectrum that is skewed toward higher energies. Lower-energy photons are absorbed more readily than high-energy ones. As a result, the transmitted spectrum becomes "hardened," with its average energy increasing. We also don't see any hardening for the monochromatic peaks, as expected. 
+
+Beam hardening is significant in image reconstruction, as it may result in characteristic artefacts. CT beam hardening artefacts are known as: streaking (dark bands) and cupping artefacts \cite{Murphy_2016}.
 
 \bibliography{References}
 \bibliographystyle{ieeetr}
