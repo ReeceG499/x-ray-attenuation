@@ -9,14 +9,14 @@ def circlemask(radii, centre_x, centre_y, mu, width, height):
     mask = (x-centre_x)**2 + (y-centre_y)**2 <= radii**2
     return mask
 
-def shepplogan(energies, mu_tissue, mu_bone):
+def shepplogan(energies, mu_tissue, mu_bone, size, dtype):
     E = len(energies)
 
     # Generate Shepp-Logan phantom (returns 128x128 by default)
-    phantom_2d = shepp_logan_phantom()
+    phantom_2d = resize(shepp_logan_phantom(), (size,size), anti_aliasing=True)
 
     # Create 3D phantom by replicating for each energy level
-    phantom = np.zeros((400, 400, E))
+    phantom = np.zeros((size, size, E))
     for e in range(E):
         phantom[:, :, e] = np.where(phantom_2d == 0, 0,  # background
                         np.where(phantom_2d == 0.1, mu_tissue[e]*0.5,
