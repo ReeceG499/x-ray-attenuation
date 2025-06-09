@@ -8,6 +8,7 @@
 \usepackage{amsmath}
 \usepackage{pythonhighlight}
 \usepackage{float}
+\usepackage{url}
 
 \begin{document}
 \maketitle
@@ -105,6 +106,53 @@ Figure \ref{fig:beamhardening} clearly shows beam hardening on the X-ray spectru
 Beam hardening is significant in image reconstruction, as it may result in characteristic artefacts. CT beam hardening artefacts are known as: streaking artefacts, where dark bands appear between dense structures, and cupping artefacts, where the center of a homogeneous object appears less attenuating than the periphery \cite{Murphy_2016}.
 
 \subsection{Phantoms and Sinograms}
+In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. 
+
+\begin{figure}.
+	\includegraphics[width=\linewidth]{shepplogan.png}
+	\caption{Shepp-Logan head phantom image}
+	\label{fig:shepplogan}
+\end{figure}
+
+Using Jan Hrach's python code, \cite{phantom_py}, I can recreate the Shepp-Logan phantom with constant attenuation coefficients.
+
+Another phantom I created was a simple circle of bone surrounded by a larger circle of soft tissue. This was an easy way to test using the energy dependent attenuation coefficients.
+
+\begin{python}
+def circlemask(radii, centre_x, centre_y, width, height):
+    x, y = np.ogrid[:width, :height]
+    mask = (x-centre_x)**2 + (y-centre_y)**2 <= radii**2
+    return mask
+   
+width, height = 180,180
+s = sp.Spek(kvp=150,th=12)
+energies = s.get_k()
+# Load each material
+mu_bone = load_mu_data(r"code\bone.csv", density=1.85, energy_range_KeV=energies)
+mu_tissue = load_mu_data(r"code\soft_tissue.csv", density=1.06, energy_range_KeV=energies)
+E=len(energies)
+
+phantom = np.zeros((height, width, E))
+bone_mask = circlemask(10,width//2,height//2,width,height)
+thigh_mask=circlemask(40,width//2,height//2,width,height)
+
+# Background
+phantom[:, :, :] = 0  # broadcast over all pixels
+
+# Thigh region
+phantom[thigh_mask, :] = mu_tissue
+
+# Bone region
+phantom[bone_mask, :] = mu_bone
+\end{python}
+
+We can use matplotlib to display these phantoms:
+
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{simplephantom.png}
+	\caption{Left: Shepp-Logan phantom. Right: Circular phantom with central bone inclusion ($\mu$ map at energy bin 50).}
+	\label{fig:phantoms}
+\end{figure}
 
 \bibliography{References}
 \bibliographystyle{ieeetr}

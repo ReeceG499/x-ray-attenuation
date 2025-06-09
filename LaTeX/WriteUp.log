@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3) (preloaded format=pdflatex 2024.3.29)  8 JUN 2025 18:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3) (preloaded format=pdflatex 2024.3.29)  9 JUN 2025 22:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -185,23 +185,27 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks25
 \@floatcapt=\box57
 )
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
 (WriteUp.aux)
 \openout1 = `WriteUp.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
 
 (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
@@ -232,7 +236,7 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 <xray_tube.png, id=1, 640.3925pt x 350.30875pt>
 File: xray_tube.png Graphic file (type png)
 <use xray_tube.png>
-Package pdftex.def Info: xray_tube.png  used on input line 30.
+Package pdftex.def Info: xray_tube.png  used on input line 31.
 (pdftex.def)             Requested size: 345.0pt x 188.72559pt.
  [1
 
@@ -241,33 +245,59 @@ Package pdftex.def Info: xray_tube.png  used on input line 30.
 <typicalxrayspectra.png, id=24, 611.4042pt x 395.3169pt>
 File: typicalxrayspectra.png Graphic file (type png)
 <use typicalxrayspectra.png>
-Package pdftex.def Info: typicalxrayspectra.png  used on input line 61.
+Package pdftex.def Info: typicalxrayspectra.png  used on input line 62.
 (pdftex.def)             Requested size: 345.0pt x 223.07698pt.
 
 (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2024/03/11 1.10a listings language file
 )
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 69.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 70.
 
 [3 <./typicalxrayspectra.png>]
 <beamhardening.png, id=32, 602.0091pt x 395.3169pt>
 File: beamhardening.png Graphic file (type png)
 <use beamhardening.png>
-Package pdftex.def Info: beamhardening.png  used on input line 98.
+Package pdftex.def Info: beamhardening.png  used on input line 99.
 (pdftex.def)             Requested size: 345.0pt x 226.55144pt.
- (WriteUp.bbl [4 <./beamhardening.png>]) [5]
-(WriteUp.aux)
+ [4 <./beamhardening.png>]
+<shepplogan.png, id=37, 635.87563pt x 420.06938pt>
+File: shepplogan.png Graphic file (type png)
+<use shepplogan.png>
+Package pdftex.def Info: shepplogan.png  used on input line 112.
+(pdftex.def)             Requested size: 345.0pt x 227.91733pt.
+
+Overfull \hbox (6.85187pt too wide) in paragraph at lines 111--113
+[]\OT1/cmr/m/n/10 . [] 
+ []
+
+[5 <./shepplogan.png>]
+<simplephantom.png, id=42, 722.7pt x 361.35pt>
+File: simplephantom.png Graphic file (type png)
+<use simplephantom.png>
+Package pdftex.def Info: simplephantom.png  used on input line 152.
+(pdftex.def)             Requested size: 345.0pt x 172.49767pt.
+ (WriteUp.bbl
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no “ in font cmr10!
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--23
+[]\OT1/cmr/m/n/10 J. Hra-chovec, ``phan-tom.py,'' n.d.  Ac-cessed: 2025-06-09 a
+t
+ []
+
+) [6 <./simplephantom.png>] (WriteUp.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 4421 strings out of 474424
- 67281 string characters out of 5741739
- 2057496 words of memory out of 5000000
- 26740 multiletter control sequences out of 15000+600000
+ 4589 strings out of 474424
+ 69525 string characters out of 5741739
+ 2062496 words of memory out of 5000000
+ 26904 multiletter control sequences out of 15000+600000
  565245 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  79i,6n,93p,724b,2121s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -290,9 +320,9 @@ ts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/reece/AppData/Local/Programs/M
 iKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/reece/AppData/Local/Pr
 ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/reece/AppData
 /Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on WriteUp.pdf (5 pages, 291013 bytes).
+Output written on WriteUp.pdf (6 pages, 527051 bytes).
 PDF statistics:
- 110 PDF objects out of 1000 (max. 8388607)
+ 117 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

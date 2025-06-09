@@ -1,7 +1,7 @@
-def load_mu_data(csv_path, density, energy_range_KeV):
-    import pandas as pd
-    from scipy.interpolate import interp1d
+import pandas as pd
+from scipy.interpolate import interp1d
 
+def load_mu_data(csv_path, density, energy_range_KeV):
     df = pd.read_csv(csv_path, names=["Energy_MeV", "Mu_Rho"], header=None)
     df["Energy_keV"] = df["Energy_MeV"] * 1000
     df = df.groupby("Energy_keV", as_index=False).mean()
