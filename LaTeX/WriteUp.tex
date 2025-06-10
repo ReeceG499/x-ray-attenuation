@@ -14,11 +14,13 @@
 \maketitle
 
 \begin{abstract}
-I have chosen to simulate x-ray transmission through a digital phantom, using energy dependent attenuation to generate sinograms that I then reconstruct using simple back projection. I used NIST data to model bone and soft tissue with energy dependent attenuation coefficients.
+I have chosen to simulate x-ray transmission through digital phantoms, using energy dependent attenuation from NIST data, to generate sinograms that I then reconstruct using simple back projection.
 \end{abstract}
 
 \section{Introduction}
-Computed tomography scans are a form of medical imagery that uses X-rays to  create images of the body. CT scans reconstruct cross sectional images of the body from multiple projections of X-ray attenuation through an object. In this project, I go through a large amount of the process of X-ray imaging: from simulating the incident X-rays using the python software toolkit spekpy, to simulating the x-ray attenuation and forming a spectogram, I then reconstruct the image using simple back projection.
+Computed tomography (CT) scans are a form of medical imagery that uses x-rays to  create images of the body. CT scans reconstruct cross sectional images of the body from multiple projections of x-ray scans at a range of angles. This project aims to deepen my understanding of medical imaging techniques through the simulation and reconstruction of CT projections. 
+
+This work particularly focuses on incorporating energy-dependent attenuation coefficients, derived from NIST data, to accurately model materials like bone and soft tissue, thereby allowing for the investigation of phenomena such as beam hardening.
 
 \section{Methods}
 
@@ -29,13 +31,14 @@ X-rays are produced when high kinetic energy electrons are accelerated towards a
 
 \begin{figure}
   \includegraphics[width=\linewidth]{xray_tube.png}
-  \caption{A X-ray tube}
+  \caption{Schematic of a X-ray tube}
   \label{fig:X-ray tube}
 \end{figure}
-Figure \ref{fig:X-ray tube} \cite{Mason} shows a diagram of a X-ray tube . Which helps to visualise the origin of the X-ray spectrum as electrons are emitted via thermionic emission and then accelerated toward a positively charged anode, where their interactions with the target produce both bremsstrahlung and characteristic radiation.
+
+Figure \ref{fig:X-ray tube} \cite{Mason} shows a diagram of a x-ray tube . Which helps to visualise the origin of the x-ray spectrum as electrons are emitted via thermionic emission and then accelerated toward a positively charged anode, where their interactions with the target produce both bremsstrahlung and characteristic radiation.
 
 \subsubsection{Attenuation of X-rays}
-As X-rays pass through matter, they are attenuated according to the Beer-Lambert law: 
+As x-rays pass through matter, they are attenuated according to the Beer-Lambert law: 
 \begin{equation} \label{bl}
 I(E) = I_0 \cdot e^{-\mu(E) x}
 \end{equation}
@@ -52,19 +55,19 @@ I have included  $\mu$ to be energy dependent as this is what is observed in exp
 \begin{equation} \label{linearatt}
 \mu(E) = \left(\frac{\mu}{\rho}\right) \cdot \rho
 \end{equation}
-using mass attenuation data from NIST and known material densities.
+Where $\left(\frac{\mu}{\rho}\right)$ is the mass attenuation coefficient from NIST \cite{nistXRayMass}
 
 \subsection{Investigating Beam Hardening}
-Beam hardening occurs during X-ray attenuation as higher energy (hard) X-rays penetrate dense materials more effectively than the low energy (soft) X-rays. This has the effect of shifting the peak of the bremsstrahlung radiation towards higher energies. Beam hardening clearly cannot occur for monochromatic X-rays so we can predict that the characteristic radiation will not harden.
-I used spekpy and matplotlib to generate a typical spectra from a Tungsten X-ray tube and plot for energies upto 150 keV. I used a 2mm Aluminium filter (common for x-ray tubes) to avoid getting very large peaks at low energies. We can use spekpys built in filter function for this but will also write our own filtering code shortly.
+Beam hardening occurs during x-ray attenuation as higher energy (hard) X-rays penetrate dense materials more effectively than the low energy (soft) X-rays. This has the effect of shifting the peak of the bremsstrahlung radiation towards higher energies. Beam hardening cannot occur for monochromatic X-rays, as the average energy will not change, so we can predict that the characteristic radiation will not harden.
+I used spekpy, a dedicated x-ray spectrum simulation toolkit, and matplotlib to generate a typical spectra from a Tungsten x-ray tube and plot for energies upto 150 keV. I used a 2mm Aluminium filter to remove low energy, non-diagnostic x-rays. We can use spekpys built in filter function for this but will also write our own filtering code shortly.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{typicalxrayspectra.png}
-	\caption{X-ray Spectrum from a X-ray tube with a Tungsten target}
+	\caption{X-ray Spectrum from a x-ray tube with a Tungsten target}
   \label{fig:basespectra}
 \end{figure}
 
-In Figure \ref{fig:basespectra} we can clearly see the sharp characteristic peaks that correspond to Tungsten. Writing code for filtering using NIST data and interpolation to fit the number of data points required., 
+In Figure \ref{fig:basespectra} we can see the sharp characteristic peaks that correspond to Tungsten. Writing code for filtering using NIST data and interpolation to fit the number of data points required., 
 
 \begin{python}
 import pandas as pd
@@ -101,12 +104,13 @@ I_filtered = I0 * np.exp(-mu_at_spectrum_energies * thickness_cm)
   \label{fig:beamhardening}
 \end{figure}
 
-Figure \ref{fig:beamhardening} clearly shows beam hardening on the X-ray spectrum. The lower-energy (soft) X-rays are preferentially attenuated, resulting in a spectrum that is skewed toward higher energies. Lower-energy photons are absorbed more readily than high-energy ones. As a result, the transmitted spectrum becomes "hardened," with its average energy increasing. We also don't see any hardening for the monochromatic peaks, as expected. 
+Figure \ref{fig:beamhardening} shows beam hardening on the X-ray spectrum. The lower-energy (soft) x-rays are preferentially attenuated, resulting in a spectrum that is skewed toward higher energies. Lower-energy photons are absorbed more readily than high-energy ones. As a result, the transmitted spectrum becomes "hardened," with its average energy increasing. We also don't see any hardening for the monochromatic peaks, as expected. 
 
 Beam hardening is significant in image reconstruction, as it may result in characteristic artefacts. CT beam hardening artefacts are known as: streaking artefacts, where dark bands appear between dense structures, and cupping artefacts, where the center of a homogeneous object appears less attenuating than the periphery \cite{Murphy_2016}.
 
 \subsection{Phantoms and Sinograms}
-In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. 
+\subsubsection{Generating Phantoms}
+In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. The Shepp-Logan phantom is a standard benchmark for CT reconstruction algorithms due to its complex structure that still models real world conditions.
 
 \begin{figure}.
 	\includegraphics[width=\linewidth]{shepplogan.png}
@@ -116,7 +120,7 @@ In medical scans, phantoms are used as stand-ins for human tissues to ensure tha
 
 Using Jan Hrach's python code, \cite{phantom_py}, I can recreate the Shepp-Logan phantom with constant attenuation coefficients.
 
-Another phantom I created was a simple circle of bone surrounded by a larger circle of soft tissue. This was an easy way to test using the energy dependent attenuation coefficients.
+Another phantom I created was a simple circle of bone surrounded by a larger circle of soft tissue. This was an easy way to test using the energy dependent attenuation coefficients. The $circlemask$ function is use to define circular regions on the phantom, which can then be assigned with properties for different materials. Using a phantom with simplified geometry allowed for clearer observation of attenuation characteristics.
 
 \begin{python}
 def circlemask(radii, centre_x, centre_y, width, height):
@@ -127,7 +131,7 @@ def circlemask(radii, centre_x, centre_y, width, height):
 width, height = 180,180
 s = sp.Spek(kvp=150,th=12)
 energies = s.get_k()
-# Load each material
+# Load each material from a csv file
 mu_bone = load_mu_data(r"code\bone.csv", density=1.85, energy_range_KeV=energies)
 mu_tissue = load_mu_data(r"code\soft_tissue.csv", density=1.06, energy_range_KeV=energies)
 E=len(energies)
@@ -146,13 +150,35 @@ phantom[thigh_mask, :] = mu_tissue
 phantom[bone_mask, :] = mu_bone
 \end{python}
 
-We can use matplotlib to display these phantoms:
+Using matplotlib to display these phantoms:
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{simplephantom.png}
 	\caption{Left: Shepp-Logan phantom. Right: Circular phantom with central bone inclusion ($\mu$ map at energy bin 50).}
 	\label{fig:phantoms}
 \end{figure}
+
+\subsubsection{Sinograms}
+In order to think about image reconstruction we need to think about projections. A projection in CT scans represents the total attenuation of x-rays along a specific path of the object. At an angle $\theta$, the parallel beam geometry represents a new coordinate system $(r, s)$ in which the intensity profile $I_\theta (r)$ is measured. 
+All points $(x,y)$ satisfy $r = x \cos(\theta) + y \sin(\theta)$, and $s$ is the parametric variable along the ray line.
+
+$$\begin{pmatrix} r \\ s \end{pmatrix} = R \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix}$$
+
+Conversely,
+$$\begin{pmatrix} x \\ y \end{pmatrix} = R^T \begin{pmatrix} r \\ s \end{pmatrix} = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} r \\ s \end{pmatrix}$$
+
+Using parallel beam geometry and a fixed angle $\theta$, the measured intensity at position $r$ is the integrated mass attenuation  along $L_{(r,\theta)}$:
+
+\begin{align}
+I_{\theta}(r) &= I_0 \cdot \exp\Bigl({-\int\limits_{L_{(r,\theta)}} \mu (x,y) ds} \Bigr) \\
+& = I_0 \cdot \exp\Bigl({-\int\limits_{L_{(r,\theta)}} \mu \left(r \cos(\theta) - s \sin(\theta),r \sin(\theta) + s \cos(\theta)\right) ds} \Bigr) 
+\end{align}
+
+Each Intensity profile $I_\theta (r)$ is transformed into an attenuation profile $p_\theta (r)$:
+
+\begin{align}
+p_\theta (r) = - \ln \frac{I_\theta (r)}{I_0} = -\int\limits_{L_{(r,\theta)}} \mu \left(r \cos(\theta) - s \sin(\theta),r \sin(\theta) + s \cos(\theta)\right) ds
+\end{align}
 
 \bibliography{References}
 \bibliographystyle{ieeetr}
