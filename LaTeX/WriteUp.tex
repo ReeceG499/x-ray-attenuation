@@ -159,26 +159,81 @@ Using matplotlib to display these phantoms:
 \end{figure}
 
 \subsubsection{Sinograms}
-In order to think about image reconstruction we need to think about projections. A projection in CT scans represents the total attenuation of x-rays along a specific path of the object. At an angle $\theta$, the parallel beam geometry represents a new coordinate system $(r, s)$ in which the intensity profile $I_\theta (r)$ is measured. 
-All points $(x,y)$ satisfy $r = x \cos(\theta) + y \sin(\theta)$, and $s$ is the parametric variable along the ray line.
+A sinogram is a 2D representation of the raw projection data acquired in computed tomography (CT). It organizes the attenuation measurements from different angular views around an object, where each row corresponds to a 1D projection taken at a specific angle. Before we can reconstruct the cross-sectional image of the scanned object, the initial x-ray attenuation measurements are compiled into this sinogram format.
+
+To understand image reconstruction, we need to define projections. A projection in CT scans represents the total attenuation of x-rays along a specific path of the object, mathematically this is represented as a line integral. At an angle $\theta$, the parallel beam geometry represents a new coordinate system $(r, s)$ in which the intensity profile $I_\theta (r)$ is measured. Other beam geometries such as fan or cone geometries require different methodology.
 
 $$\begin{pmatrix} r \\ s \end{pmatrix} = R \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix}$$
 
 Conversely,
 $$\begin{pmatrix} x \\ y \end{pmatrix} = R^T \begin{pmatrix} r \\ s \end{pmatrix} = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} \begin{pmatrix} r \\ s \end{pmatrix}$$
 
-Using parallel beam geometry and a fixed angle $\theta$, the measured intensity at position $r$ is the integrated mass attenuation  along $L_{(r,\theta)}$:
+\begin{figure}[H]
+	\includegraphics[scale=0.6]{coordinate_system.png}
+	\caption{The object is defined in the fixed Cartesian coordinate system $(x,y)$. For a projection at angle $\theta$, a new coordinate system $(r,s)$ is defined, where r is the perpendicular distance from the origin to the x-ray ray, and s is the coordinate along the ray path}
+	\label{fig:coord}
+\end{figure}
+
+Using parallel beam geometry and a fixed angle $\theta$, the measured intensity at position $r$ is the integrated mass attenuation  along $L_{(r,\theta)}$ is given by the Beer-Lambert law:
 
 \begin{align}
 I_{\theta}(r) &= I_0 \cdot \exp\Bigl({-\int\limits_{L_{(r,\theta)}} \mu (x,y) ds} \Bigr) \\
 & = I_0 \cdot \exp\Bigl({-\int\limits_{L_{(r,\theta)}} \mu \left(r \cos(\theta) - s \sin(\theta),r \sin(\theta) + s \cos(\theta)\right) ds} \Bigr) 
 \end{align}
 
-Each Intensity profile $I_\theta (r)$ is transformed into an attenuation profile $p_\theta (r)$:
+Each Intensity profile $I_\theta (r)$ is transformed into an attenuation profile $p_\theta (r)$, by taking the negative natural logarithm of the ratio of transmitted intensity to incident intensity:
 
 \begin{align}
 p_\theta (r) = - \ln \frac{I_\theta (r)}{I_0} = -\int\limits_{L_{(r,\theta)}} \mu \left(r \cos(\theta) - s \sin(\theta),r \sin(\theta) + s \cos(\theta)\right) ds
 \end{align}
+
+This attenuation profile is what our detector measures at each angle. Going back to the circle phantom example, we can write some code to simulate this:
+
+\begin{python}
+# Sum attenuation coefficients along the ray path (top to bottom) for each (width, energy).
+# 'mu_total' is 2D (width, energy), representing total attenuation per ray per energy.
+mu_total = phantom.sum(axis=0)
+
+I = I0 * np.exp(-mu_total * pixel_thickness_cm)
+
+# Sum transmitted intensities across all energies for each detector position.
+# 'incident_intensity' is 1D (width,), representing the final polychromatic projection profile.
+incident_intensity = I.sum(axis=1)
+
+# Visualize detector readout (log form)
+detector_readout= -np.log(incident_intensity + 1e-6)  # add epsilon to avoid log(0)
+\end{python}
+
+Plotting our result we get:
+\begin{figure}[H]
+	\includegraphics[scale=0.6]{detectorreadout.png}
+	\caption{1D detector readout for our circular phantom, we see the increase in attenuation in the middle as we go through the bone.}
+	\label{fig:detector1d}
+\end{figure}
+
+If we arrange projections from all angles (only $(0,\pi)$ as $(\pi, 2\pi)$ are redundant for parallel beams) side by side as a 2D image, we get a sinogram. We can view this 2D dataset $p(r, \theta)$ for our circular phantom in Figure \ref{fig:sinogramcircle}, this sinogram was generated using scipys ndimage.rotate to simulate the projections. 
+Another, more interesting sinogram can be found from our more complex Shepp-Logan phantom, which we can see in Figure \ref{fig:sinogramshepp}. We can notice sinusoidal curves throughout the image, motivating the name sinogram.
+
+\begin{figure}[H]
+	\includegraphics[scale=0.5]{sinogramcircle.png}
+	\caption{Sinogram for our circular phantom, note how it is constant in $\theta$ due to the rotational symmetry of the circle.}
+	\label{fig:sinogramcircle}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[scale=0.5]{sinogramshepp.png}
+	\caption{Sinogram for the Shepp-Logan phantom.}
+	\label{fig:sinogramshepp}
+\end{figure}
+
+The transformation of a function $\mu (x,y)$ into $p(r, \theta)$, is known as the Radon transform defined as:
+\begin{align}
+p(r, \theta) &= R \left\{ \mu(x,y) \right\} \\
+&= \int_{-\infty}^{\infty} \mu(r \cos\theta - s \sin\theta, r \sin\theta + s \cos\theta) ds
+\end{align}
+We can therefore phrase the problem of CT reconstruction as finding an inversion formula for the Radon transform \cite{Beatty2012}. 
+
+\subsection{Inverse Radon Transform and Back projection}
 
 \bibliography{References}
 \bibliographystyle{ieeetr}

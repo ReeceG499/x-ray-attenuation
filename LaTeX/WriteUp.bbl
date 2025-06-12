@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{Tafti}
+D.~Tafti and C.~V. Maani., ``Physics, x-ray production,'' 2023.
+\newblock Accessed: 2025-06-06.
+
+\bibitem{Mason}
+J.~Mason, {\em Quantitative cone-beam computed tomography reconstruction for
+  radiotherapy planning}.
+\newblock PhD thesis, 11 2018.
+
+\bibitem{nistXRayMass}
+``{X}-{R}ay {M}ass {A}ttenuation {C}oefficients --- nist.gov.''
+  \url{https://www.nist.gov/pml/x-ray-mass-attenuation-coefficients}.
+\newblock [Accessed 09-06-2025] at
+  \url{https://www.nist.gov/pml/x-ray-mass-attenuation-coefficients}.
+
+\bibitem{Murphy_2016}
+A.~Murphy, ``Beam hardening | radiology reference article | radiopaedia.org,''
+  Oct 2016.
+
+\bibitem{Shepp_Logan_1974}
+L.~A. Shepp and B.~F. Logan, ``The fourier reconstruction of a head section,''
+  {\em IEEE Transactions on Nuclear Science}, vol.~21, p.~21–43, Jun 1974.
+
+\bibitem{phantom_py}
+J.~Hrachovec, ``phantom.py,'' n.d.
+\newblock Accessed: 2025-06-09 at https://jenda.hrach.eu/f2/cat-py/phantom.py.
+
+\bibitem{Beatty2012}
+J.~Beatty, ``The radon transform and the mathematics of medical imaging,''
+  Master's thesis, Colby College, 2012.
+
+\end{thebibliography}
