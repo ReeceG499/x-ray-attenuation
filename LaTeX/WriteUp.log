@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3) (preloaded format=pdflatex 2024.3.29)  12 JUN 2025 11:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.3) (preloaded format=pdflatex 2024.3.29)  12 JUN 2025 21:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -189,38 +189,92 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2024/02/07 v24.2 The Babel package
+\babel@savecnt=\count284
+\U@D=\dimen156
+\l@unhyphenated=\language79
+
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count285
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.l
+df
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 108.
+))
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/en\babel
+-english.tex
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 11.
+)
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/amscls\amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks26
+\thm@bodyfont=\toks27
+\thm@headfont=\toks28
+\thm@notefont=\toks29
+\thm@headpunct=\toks30
+\thm@preskip=\skip53
+\thm@postskip=\skip54
+\thm@headsep=\skip55
+\dth@everypar=\toks31
+)
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+\c@definition=\count286
+
 (WriteUp.aux)
 \openout1 = `WriteUp.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
+LaTeX Font Info:    ... okay on input line 19.
 
 (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count284
-\scratchdimen=\dimen156
+\scratchcounter=\count287
+\scratchdimen=\dimen157
 \scratchbox=\box58
-\nofMPsegments=\count285
-\nofMParguments=\count286
-\everyMPshowfont=\toks26
-\MPscratchCnt=\count287
-\MPscratchDim=\dimen157
-\MPnumerator=\count288
-\makeMPintoPDFobject=\count289
-\everyMPtoPDFconversion=\toks27
+\nofMPsegments=\count288
+\nofMParguments=\count289
+\everyMPshowfont=\toks32
+\MPscratchCnt=\count290
+\MPscratchDim=\dimen158
+\MPnumerator=\count291
+\makeMPintoPDFobject=\count292
+\everyMPtoPDFconversion=\toks33
 )
 (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
 ase.sty
@@ -232,81 +286,105 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 fg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-\c@lstlisting=\count290
+\c@lstlisting=\count293
+LaTeX Font Info:    Trying to load font information for U+msa on input line 20.
+
+ (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 20.
+
+
+(C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
 <xray_tube.png, id=1, 640.3925pt x 350.30875pt>
 File: xray_tube.png Graphic file (type png)
 <use xray_tube.png>
-Package pdftex.def Info: xray_tube.png  used on input line 33.
+Package pdftex.def Info: xray_tube.png  used on input line 39.
 (pdftex.def)             Requested size: 345.0pt x 188.72559pt.
- [1
 
-{C:/Users/reece/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-[2 <./xray_tube.png>]
+[1
+
+{C:/Users/reece/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2 <./xray_t
+ube.png>]
 <typicalxrayspectra.png, id=24, 611.4042pt x 395.3169pt>
 File: typicalxrayspectra.png Graphic file (type png)
 <use typicalxrayspectra.png>
-Package pdftex.def Info: typicalxrayspectra.png  used on input line 65.
+Package pdftex.def Info: typicalxrayspectra.png  used on input line 71.
 (pdftex.def)             Requested size: 345.0pt x 223.07698pt.
 
 (C:\Users\reece\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2024/03/11 1.10a listings language file
 )
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <8> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 73.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 79.
 
 [3 <./typicalxrayspectra.png>]
 <beamhardening.png, id=32, 602.0091pt x 395.3169pt>
 File: beamhardening.png Graphic file (type png)
 <use beamhardening.png>
-Package pdftex.def Info: beamhardening.png  used on input line 102.
+Package pdftex.def Info: beamhardening.png  used on input line 108.
 (pdftex.def)             Requested size: 345.0pt x 226.55144pt.
  [4 <./beamhardening.png>]
 <shepplogan.png, id=37, 635.87563pt x 420.06938pt>
 File: shepplogan.png Graphic file (type png)
 <use shepplogan.png>
-Package pdftex.def Info: shepplogan.png  used on input line 116.
+Package pdftex.def Info: shepplogan.png  used on input line 122.
 (pdftex.def)             Requested size: 345.0pt x 227.91733pt.
 
-Overfull \hbox (6.85187pt too wide) in paragraph at lines 115--117
+Overfull \hbox (6.85187pt too wide) in paragraph at lines 121--123
 []\OT1/cmr/m/n/10 . [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 131--132
+
  []
 
 [5 <./shepplogan.png>]
 <simplephantom.png, id=42, 722.7pt x 361.35pt>
 File: simplephantom.png Graphic file (type png)
 <use simplephantom.png>
-Package pdftex.def Info: simplephantom.png  used on input line 156.
+Package pdftex.def Info: simplephantom.png  used on input line 164.
 (pdftex.def)             Requested size: 345.0pt x 172.49767pt.
  [6 <./simplephantom.png>]
 <coordinate_system.png, id=47, 417.05812pt x 384.43625pt>
 File: coordinate_system.png Graphic file (type png)
 <use coordinate_system.png>
-Package pdftex.def Info: coordinate_system.png  used on input line 172.
+Package pdftex.def Info: coordinate_system.png  used on input line 180.
 (pdftex.def)             Requested size: 250.2368pt x 230.66351pt.
  [7 <./coordinate_system.png>]
 <detectorreadout.png, id=53, 417.7206pt x 328.8285pt>
 File: detectorreadout.png Graphic file (type png)
 <use detectorreadout.png>
-Package pdftex.def Info: detectorreadout.png  used on input line 209.
+Package pdftex.def Info: detectorreadout.png  used on input line 217.
 (pdftex.def)             Requested size: 250.6343pt x 197.29861pt.
 
 [8]
 <sinogramcircle.png, id=59, 603.4545pt x 339.669pt>
 File: sinogramcircle.png Graphic file (type png)
 <use sinogramcircle.png>
-Package pdftex.def Info: sinogramcircle.png  used on input line 218.
+Package pdftex.def Info: sinogramcircle.png  used on input line 226.
 (pdftex.def)             Requested size: 301.7265pt x 169.83408pt.
 <sinogramshepp.png, id=60, 706.0779pt x 354.123pt>
 File: sinogramshepp.png Graphic file (type png)
 <use sinogramshepp.png>
-Package pdftex.def Info: sinogramshepp.png  used on input line 224.
+Package pdftex.def Info: sinogramshepp.png  used on input line 232.
 (pdftex.def)             Requested size: 353.03807pt x 177.06105pt.
 
-Overfull \hbox (8.03807pt too wide) in paragraph at lines 224--225
+Overfull \hbox (8.03807pt too wide) in paragraph at lines 232--233
 [][] 
  []
 
-[9 <./detectorreadout.png> <./sinogramcircle.png>] (WriteUp.bbl
+[9 <./detectorreadout.png> <./sinogramcircle.png>] [10 <./sinogramshepp.png>]
+<sbpreconstructions.png, id=71, 607.068pt x 302.0886pt>
+File: sbpreconstructions.png Graphic file (type png)
+<use sbpreconstructions.png>
+Package pdftex.def Info: sbpreconstructions.png  used on input line 287.
+(pdftex.def)             Requested size: 345.0pt x 171.67601pt.
+
+[11 <./sbpreconstructions.png>] (WriteUp.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 13--17
 []\OT1/cmr/m/n/10 ``X-Ray Mass At-ten-u-a-tion Co-ef-fi-cients --- nist.gov.'' 
 $\OT1/cmtt/m/n/10 https :
@@ -333,18 +411,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 27--29
 t
  []
 
-[10 <./sinogramshepp.png>]) [11] (WriteUp.aux)
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no ” in font cmr10!
+Missing character: There is no â in font cmr10!
+Missing character: There is no € in font cmr10!
+Missing character: There is no “ in font cmr10!
+[12]
+Missing character: There is no Ã in font cmr10!
+Missing character: There is no ¶ in font cmr10!
+) [13] (WriteUp.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-03-14>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 4645 strings out of 474424
- 70678 string characters out of 5741739
- 2116496 words of memory out of 5000000
- 26960 multiletter control sequences out of 15000+600000
- 565245 words of font info for 62 fonts, out of 8000000 for 9000
+ 5933 strings out of 474424
+ 93978 string characters out of 5741739
+ 2129496 words of memory out of 5000000
+ 28208 multiletter control sequences out of 15000+600000
+ 567725 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  79i,12n,93p,724b,2121s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\reece\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
@@ -369,10 +456,11 @@ ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/reece/A
 ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/User
 s/reece/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb
 ><C:/Users/reece/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
-mtt8.pfb>
-Output written on WriteUp.pdf (11 pages, 875078 bytes).
+mtt8.pfb><C:/Users/reece/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/symbols/msbm10.pfb>
+Output written on WriteUp.pdf (13 pages, 1004406 bytes).
 PDF statistics:
- 157 PDF objects out of 1000 (max. 8388607)
+ 171 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 

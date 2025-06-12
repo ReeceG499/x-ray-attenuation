@@ -9,12 +9,18 @@
 \usepackage{pythonhighlight}
 \usepackage{float}
 \usepackage{url}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-I have chosen to simulate x-ray transmission through digital phantoms, using energy dependent attenuation from NIST data, to generate sinograms that I then reconstruct using simple back projection.
+I have chosen to simulate x-ray transmission through digital phantoms, using energy dependent attenuation from NIST data, to generate sinograms that I then reconstruct using back projection methods.
 \end{abstract}
 
 \section{Introduction}
@@ -110,7 +116,7 @@ Beam hardening is significant in image reconstruction, as it may result in chara
 
 \subsection{Phantoms and Sinograms}
 \subsubsection{Generating Phantoms}
-In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. The Shepp-Logan phantom is a standard benchmark for CT reconstruction algorithms due to its complex structure that still models real world conditions.
+In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. The Shepp-Logan phantom is defined as 10 ellipses with parameters from the original paper \cite{Shepp_Logan_1974} and serves as a model of the human head.
 
 \begin{figure}.
 	\includegraphics[width=\linewidth]{shepplogan.png}
@@ -118,9 +124,11 @@ In medical scans, phantoms are used as stand-ins for human tissues to ensure tha
 	\label{fig:shepplogan}
 \end{figure}
 
-Using Jan Hrach's python code, \cite{phantom_py}, I can recreate the Shepp-Logan phantom with constant attenuation coefficients.
+Using Jan Hrach's python code \cite{phantom_py}, I can recreate the Shepp-Logan phantom with constant attenuation coefficients.
 
 Another phantom I created was a simple circle of bone surrounded by a larger circle of soft tissue. This was an easy way to test using the energy dependent attenuation coefficients. The $circlemask$ function is use to define circular regions on the phantom, which can then be assigned with properties for different materials. Using a phantom with simplified geometry allowed for clearer observation of attenuation characteristics.
+
+Python code:\\
 
 \begin{python}
 def circlemask(radii, centre_x, centre_y, width, height):
@@ -159,7 +167,7 @@ Using matplotlib to display these phantoms:
 \end{figure}
 
 \subsubsection{Sinograms}
-A sinogram is a 2D representation of the raw projection data acquired in computed tomography (CT). It organizes the attenuation measurements from different angular views around an object, where each row corresponds to a 1D projection taken at a specific angle. Before we can reconstruct the cross-sectional image of the scanned object, the initial x-ray attenuation measurements are compiled into this sinogram format.
+A sinogram is a 2D representation of the projection data acquired in a CT scan, where each row corresponds to a 1D projection taken at a specific angle. Before we can reconstruct the cross-sectional image of the scanned object, the initial x-ray attenuation measurements are compiled into this sinogram format.
 
 To understand image reconstruction, we need to define projections. A projection in CT scans represents the total attenuation of x-rays along a specific path of the object, mathematically this is represented as a line integral. At an angle $\theta$, the parallel beam geometry represents a new coordinate system $(r, s)$ in which the intensity profile $I_\theta (r)$ is measured. Other beam geometries such as fan or cone geometries require different methodology.
 
@@ -170,11 +178,11 @@ $$\begin{pmatrix} x \\ y \end{pmatrix} = R^T \begin{pmatrix} r \\ s \end{pmatrix
 
 \begin{figure}[H]
 	\includegraphics[scale=0.6]{coordinate_system.png}
-	\caption{The object is defined in the fixed Cartesian coordinate system $(x,y)$. For a projection at angle $\theta$, a new coordinate system $(r,s)$ is defined, where r is the perpendicular distance from the origin to the x-ray ray, and s is the coordinate along the ray path}
+	\caption{The object is defined in the Cartesian coordinate system $(x,y)$. For a projection at angle $\theta$, a new coordinate system $(r,s)$ is defined, where r is the perpendicular distance from the origin to the x-ray ray, and s is the coordinate along the ray path}
 	\label{fig:coord}
 \end{figure}
 
-Using parallel beam geometry and a fixed angle $\theta$, the measured intensity at position $r$ is the integrated mass attenuation  along $L_{(r,\theta)}$ is given by the Beer-Lambert law:
+With parallel beams at a fixed angle $\theta$, the measured intensity at position $r$ along $L_{(r,\theta)}$ is given by the Beer-Lambert law:
 
 \begin{align}
 I_{\theta}(r) &= I_0 \cdot \exp\Bigl({-\int\limits_{L_{(r,\theta)}} \mu (x,y) ds} \Bigr) \\
@@ -226,14 +234,76 @@ Another, more interesting sinogram can be found from our more complex Shepp-Loga
 	\label{fig:sinogramshepp}
 \end{figure}
 
-The transformation of a function $\mu (x,y)$ into $p(r, \theta)$, is known as the Radon transform defined as:
-\begin{align}
-p(r, \theta) &= R \left\{ \mu(x,y) \right\} \\
-&= \int_{-\infty}^{\infty} \mu(r \cos\theta - s \sin\theta, r \sin\theta + s \cos\theta) ds
-\end{align}
+The transformation of a function $\mu (x,y)$ into $p(r, \theta)$, is known as the Radon transform defined here as:
+\begin{definition}
+For a function $\mu(x,y)$ defined on $\mathbb{R}^2$, the Radon transform of $\mu$, denoted as $R\left\{\mu \right\}$, is defined as
+\begin{align*}
+p(r, \theta) &= R \left\{ \mu(x,y) \right\} \notag \\
+             &= \int_{-\infty}^{\infty} \mu(r \cos\theta - s \sin\theta,\; r \sin\theta + s \cos\theta) \, ds
+\end{align*}
+\end{definition}
 We can therefore phrase the problem of CT reconstruction as finding an inversion formula for the Radon transform \cite{Beatty2012}. 
 
-\subsection{Inverse Radon Transform and Back projection}
+\subsection{Inverse Radon Transform and Back Projection}
+\subsubsection{Simple Back Projection}
+One intuitive way we can think of image reconstruction is with 'Simple Back Projection'. If we take each projection $p_\theta (r)$ of our sinogram, and smear the value along lines perpendicular to the angle $\theta$ and add these up for all $\theta$ before normalising we should get back to our result. Imagine each projection as a shadow cast from a specific direction; by stacking up these shadows, we can approximate the object that cast them.
+Mathematically, we define the back projection as:
+\begin{definition}
+Let $p = p(r, \theta)$. We define the back projection, $\mathcal{B} p$, at a point $(x,y)$ as
+$$
+\mathcal{B} p(x,y) = \frac{1}{\pi} \int_{0}^{\pi} p(x \cos(\theta) + y \sin(\theta), \theta) d\theta
+$$
+\end{definition}
+
+In practice, we implement this by:
+\begin{itemize}
+	\item Taking each row of the sinogram (a projection)
+	\item Replicating it across a 2D grid (smearing)
+	\item Rotating it back in place
+	\item Summing the results across all angles
+\end{itemize}
+
+Or in python code:
+
+\begin{python}
+# Initialize reconstruction
+reconstruction = np.zeros((width, height))
+
+# Backproject each angle's projection
+for i, angle in enumerate(angles):
+    # Expand the 1D projection into a 2D image by smearing along the angle
+    projection = sinogram[i]
+    expanded = np.tile(projection, (width, 1))  # Repeat along y-axis
+    
+    # Rotate back to original angle and accumulate
+    rotated_back = ndimage.rotate(expanded, -angle, reshape=False, order=1)
+    reconstruction += rotated_back
+
+# Normalize
+reconstruction /= len(angles)
+\end{python}
+
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{sbpreconstructions.png}
+	\caption{Simple Back Projection Reconstructions for our 2 phantoms.}
+	\label{fig:SBPreconstructions}
+\end{figure}
+
+This roughly reconstructs the structure of the phantoms and we can make out some of the internal structure in both of our phantoms. Both of our phantoms are blurred and have pronounced dark corners. The dark corners are a known artefact, as they receive fewer ray contributions when we rotate around but to understand the blurring we need to requires further mathematical understanding.
+
+Doing more quantitative analysis on how our Shepp-Logan reconstruction compares to the original we can compare Mean Square Error (MSE) and Structural Similarity Index Measure (SSIM) \cite{Sara_Akter_Uddin_2019}, for our Shepp-Logan:
+\begin{itemize}
+	\item MSE: 0.3778
+	\item SSIM: 0.3130
+\end{itemize}
+
+In order to get these figures I ensured that both the original image and reconstruction was normalised, and applied a circle masking function to ensure we were only comparing the significant parts of the image and not the darkened corners.
+
+MSE measures the average squared difference between actual and ideal pixel values. Since the normalized image ranges from 0 to 1, an MSE of 0.3778 is relatively high, indicating a low-fidelity reconstruction.
+
+SSIM evaluates image quality by considering luminance, contrast and structural information. A value close to 1 would imply the 2 images are similar, so 0.3130 suggests significant degradation in these areas (which matches what we observe).
+
+Overall quantitative image comparison is a tricky topic and both of these metrics have issues \cite{nilsson2020understandingssim}, but they still clearly indicate the need for a more sophisticated reconstruction algorithm.
 
 \bibliography{References}
 \bibliographystyle{ieeetr}

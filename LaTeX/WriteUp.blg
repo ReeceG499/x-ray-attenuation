@@ -8,45 +8,45 @@ Database file #1: References.bib
 Warning--entry type for "Tafti" isn't style-file defined
 --line 1 of file References.bib
 Warning--empty school in Mason
-You've used 7 entries,
+You've used 9 entries,
             1876 wiz_defined-function locations,
-            523 strings with 4481 characters,
-and the built_in function-call counts, 1086 in all, are:
-= -- 110
-> -- 33
+            537 strings with 4803 characters,
+and the built_in function-call counts, 1534 in all, are:
+= -- 155
+> -- 52
 < -- 0
-+ -- 15
-- -- 8
-* -- 51
-:= -- 161
-add.period$ -- 11
-call.type$ -- 7
-change.case$ -- 6
++ -- 22
+- -- 13
+* -- 75
+:= -- 220
+add.period$ -- 13
+call.type$ -- 9
+change.case$ -- 9
 chr.to.int$ -- 0
-cite$ -- 8
-duplicate$ -- 51
-empty$ -- 118
-format.name$ -- 8
-if$ -- 269
+cite$ -- 10
+duplicate$ -- 76
+empty$ -- 160
+format.name$ -- 13
+if$ -- 385
 int.to.chr$ -- 0
-int.to.str$ -- 7
-missing$ -- 1
-newline$ -- 28
-num.names$ -- 6
-pop$ -- 36
+int.to.str$ -- 9
+missing$ -- 2
+newline$ -- 34
+num.names$ -- 8
+pop$ -- 46
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 42
+skip$ -- 65
 stack$ -- 0
-substring$ -- 14
-swap$ -- 16
+substring$ -- 26
+swap$ -- 29
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 1
-while$ -- 7
-width$ -- 8
-write$ -- 63
+while$ -- 10
+width$ -- 10
+write$ -- 81
 (There were 2 warnings)

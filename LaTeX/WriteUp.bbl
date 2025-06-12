@@ -29,6 +29,14 @@ J.~Hrachovec, ``phantom.py,'' n.d.
 
 \bibitem{Beatty2012}
 J.~Beatty, ``The radon transform and the mathematics of medical imaging,''
-  Master's thesis, Colby College, 2012.
+  honours thesis, Colby College, 2012.
+
+\bibitem{Sara_Akter_Uddin_2019}
+U.~Sara, M.~Akter, and M.~Uddin, ``Image quality assessment through fsim, ssim,
+  mse and psnr—a comparative study,'' {\em Journal of Computer and
+  Communications}, vol.~07, no.~03, p.~8–18, 2019.
+
+\bibitem{nilsson2020understandingssim}
+J.~Nilsson and T.~Akenine-Möller, ``Understanding ssim,'' 2020.
 
 \end{thebibliography}
