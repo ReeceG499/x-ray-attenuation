@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\title{Simulating and Reconstructing X-Ray CT Projections}
+\title{Fundamentals of Simulating X-Ray CT Projections}
 \author{Reece Garthwaite}
 \date{}
 
@@ -12,6 +12,12 @@
 \usepackage[english]{babel}
 \usepackage{amsthm}
 \usepackage{amsfonts}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tikz}
+\usepackage{caption}
+\usetikzlibrary{positioning, arrows.meta}
+\usepackage{subfig}
+
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -20,28 +26,86 @@
 \maketitle
 
 \begin{abstract}
-I have chosen to simulate x-ray transmission through digital phantoms, using energy dependent attenuation from NIST data, to generate sinograms that I then reconstruct using back projection methods.
+This project aims to computationally demonstrate the fundamental principles of x-ray Computed Tomography (CT), from x-ray generation and material attenuation to projection acquisition and image reconstruction.
 \end{abstract}
 
 \section{Introduction}
-Computed tomography (CT) scans are a form of medical imagery that uses x-rays to  create images of the body. CT scans reconstruct cross sectional images of the body from multiple projections of x-ray scans at a range of angles. This project aims to deepen my understanding of medical imaging techniques through the simulation and reconstruction of CT projections. 
+Computed tomography (CT) is a medical imaging technique that constructs cross-sectional representations of the human body by acquiring X-ray projections at multiple angles. These projections are mathematically combined to reconstruct internal anatomical structures.
 
-This work particularly focuses on incorporating energy-dependent attenuation coefficients, derived from NIST data, to accurately model materials like bone and soft tissue, thereby allowing for the investigation of phenomena such as beam hardening.
+The core objective is to build a simplified computational pipeline that accurately captures the essential physics and mathematics underpinning CT. A particular focus is placed on incorporating energy-dependent attenuation coefficients, derived from NIST data, to realistically model materials such as bone and soft tissue. This approach allows for a practical demonstration and analysis of beam hardening.
+
+\section{Project Overview}
+The simulation is composed of five stages, as illustrated in Figure~\ref{fig:pipeline}:
+
+\begin{enumerate}
+    \item \textbf{X-ray Spectrum Simulation}: A diagnostic X-ray spectrum is generated using SpekPy, simulating a tungsten anode at specified tube voltage and an aluminium filter - attempting to recreate clinical conditions.
+
+    \item \textbf{Energy-Dependent Attenuation Modelling}: Attenuation coefficients $\mu(E)$ for different materials (e.g., bone, soft tissue) are interpolated from NIST data and scaled using physical density to compute linear attenuation across the energy range.
+
+    \item \textbf{Phantom Construction}: Constructing and using phantoms is a key part of researching medical imaging
+
+    \item \textbf{Sinogram Generation}: X-ray projections are computed at multiple angles by integrating energy-dependent attenuation along linear ray paths through the phantom, producing a 2D sinogram.
+
+    \item \textbf{Image Reconstruction}: The sinogram is reconstructed into a 2D cross-sectional image using back projection techniques.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 2.2cm,
+    box/.style={rectangle, draw, rounded corners=3pt, minimum width=4.5cm, minimum height=1.2cm, align=center, font=\small},
+    arrow/.style={->, thick}
+]
+
+\node[box] (spectrum) {1. X-ray Spectrum \\ Simulation (SpekPy)};
+\node[box, below=of spectrum] (attenuation) {2. Energy-Dependent \\ Attenuation Modeling};
+\node[box, below=of attenuation] (phantom) {3. Phantom \\ Construction};
+\node[box, below=of phantom] (sinogram) {4. Sinogram \\ Generation};
+\node[box, below=of sinogram] (reconstruction) {5. Back Projection \\ Reconstruction};
+
+\draw[arrow] (spectrum) -- (attenuation);
+\draw[arrow] (attenuation) -- (phantom);
+\draw[arrow] (phantom) -- (sinogram);
+\draw[arrow] (sinogram) -- (reconstruction);
+
+\end{tikzpicture}
+\caption{Overview of the CT simulation pipeline. Each stage builds toward energy-aware image reconstruction, enabling future extensions into advanced correction and reconstruction techniques.}
+\label{fig:pipeline}
+\end{figure}
 
 \section{Methods}
 
 \subsection{Background Physics}
 \subsubsection{X-ray generation}
-X-rays are produced when high kinetic energy electrons are accelerated towards a positive anode in a x-ray tube. Tungsten is a common choice for the anode (due to its high melting point and high atomic number). Electrons come close to nuclei of the target, causing a deceleration and change in direction, converting kinetic energy into a spectrum of electromagnetic radiation. Incident electrons can ionise the material, removing an electron from the anode. As the electron orbit vacancy gets filled by a orbital shell electron in a further out shell a photon is emitted. As orbital energies and their differences are unique in atoms, this leads to what we call "characteristic radiation".
-\cite{Tafti}
+X-rays are produced in  a x-ray tube when high kinetic energy electrons are accelerated towards a positive anode. Tungsten is a common choice for the anode (due to its high melting point and high atomic number). Electrons come close to nuclei of the target, causing a deceleration and change in direction, converting kinetic energy into a spectrum of electromagnetic radiation. Incident electrons can ionise the material, removing an electron from the anode. As the electron orbit vacancy gets filled by a orbital shell electron in a further out shell a photon is emitted. As orbital energies and their differences are unique in atoms, this leads to what we call "characteristic radiation".
+\cite{Tafti2023}
 
 \begin{figure}
   \includegraphics[width=\linewidth]{xray_tube.png}
-  \caption{Schematic of a X-ray tube}
+  \caption{Schematic diagram of an X-ray tube, illustrating thermionic emission, electron acceleration, and the production of bremsstrahlung and characteristic radiation~\cite{Mason2018}.}
   \label{fig:X-ray tube}
 \end{figure}
 
-Figure \ref{fig:X-ray tube} \cite{Mason} shows a diagram of a x-ray tube . Which helps to visualise the origin of the x-ray spectrum as electrons are emitted via thermionic emission and then accelerated toward a positively charged anode, where their interactions with the target produce both bremsstrahlung and characteristic radiation.
+Figure \ref{fig:X-ray tube} shows a diagram of a x-ray tube where electrons are emitted via thermionic emission and then accelerated toward a positively charged anode, where their interactions with the target produce both bremsstrahlung and characteristic radiation.
+
+An X-ray spectrum was simulated using \texttt{SpekPy}, a dedicated toolkit for modeling diagnostic X-ray tubes. 
+
+For the simulation, a tungsten target and 150~kVp tube voltage were specified, and a 2.5~mm aluminium filter was applied to eliminate low-energy, non-diagnostic photons. These materials and values were chose to approximate conditions in general radiography. The filtered spectrum is shown in Figure~\ref{fig:basespectra}, where characteristic peaks corresponding to tungsten are clearly visible.
+
+It is important however to critically consider these choices:
+
+\begin{itemize}
+	\item Tube voltage 150~kVp: This high voltage is commonly the upper limit for x-ray tubes in medical settings. Having such a high voltage increases the proportion of high energy photons and ensures that the characteristic peaks of tungsten (main peak at ~59 keV \cite{CharacteristicRadiation}). However in actual imaging to minimise radiation exposure, tube voltage varies depending on applications e.g. paediatric CT benefiting from lower potentials. 
+	\item Aluminium filter 2.5mm: This simulates beam hardening by attenuating low-energy photons ($<30$ keV), which contribute little to image quality and increase patient dose. There is inherent filtration from the x-ray tube but added sheets are customised for individual examinations to take advantage of specific metals filtration characteristics to improve image quality. 2.5mm of aluminium is the minimum total filtration on x-ray tubes according to U.S. guidelines \cite{Filters}
+\end{itemize}
+
+Despite these simplifications, the generated spectrum demonstrates results that are suitable for the modelling carried out
+
+\begin{figure}
+	\includegraphics[scale=0.6]{typicalxrayspectra.png}
+	\caption{Simulated X-ray spectrum from a tungsten target after 2~mm aluminium filtration. Characteristic peaks are visible at specific energy levels corresponding to tungsten.}
+  \label{fig:basespectra}
+\end{figure}
 
 \subsubsection{Attenuation of X-rays}
 As x-rays pass through matter, they are attenuated according to the Beer-Lambert law: 
@@ -51,118 +115,76 @@ I(E) = I_0 \cdot e^{-\mu(E) x}
 
 Where:
 \begin{itemize}
-  \item I = transmitted intensity of radiation after passing through the material
-  \item $I_0$ : Initial intensity
-  \item $\mu$ : Linear attenuation coefficient
-  \item $x$ : Thickness of material
+  \item $I(E)$: Transmitted intensity at energy $E$
+  \item $I_0(E)$: Incident intensity at energy $E$
+  \item $\mu(E)$: Energy-dependent linear attenuation coefficient [cm$^{-1}$]
+  \item $x$: Material thickness [cm]
+
 \end{itemize}
 
-I have included  $\mu$ to be energy dependent as this is what is observed in experiments, and allows us to look for an interesting phenomenon known as beam hardening. I calculate $\mu$ using:
+The attenuation coefficient, $\mu$ is modelled as energy dependent to reflect real world phenomena such as beam hardening. The linear attenuation coefficient is computed from the mass attenuation coefficient, obtained from the NIST database~\cite{NISTXRay}, via:
+
 \begin{equation} \label{linearatt}
 \mu(E) = \left(\frac{\mu}{\rho}\right) \cdot \rho
 \end{equation}
-Where $\left(\frac{\mu}{\rho}\right)$ is the mass attenuation coefficient from NIST \cite{nistXRayMass}
+where $\left(\frac{\mu}{\rho}\right)(E)$ is the energy-dependent mass attenuation coefficient [cm$^2$/g], and $\rho$ is the physical density of the material [g/cm$^3$].
 
-\subsection{Investigating Beam Hardening}
-Beam hardening occurs during x-ray attenuation as higher energy (hard) X-rays penetrate dense materials more effectively than the low energy (soft) X-rays. This has the effect of shifting the peak of the bremsstrahlung radiation towards higher energies. Beam hardening cannot occur for monochromatic X-rays, as the average energy will not change, so we can predict that the characteristic radiation will not harden.
-I used spekpy, a dedicated x-ray spectrum simulation toolkit, and matplotlib to generate a typical spectra from a Tungsten x-ray tube and plot for energies upto 150 keV. I used a 2mm Aluminium filter to remove low energy, non-diagnostic x-rays. We can use spekpys built in filter function for this but will also write our own filtering code shortly.
+\subsection{Demonstrating Beam Hardening}
+Beam hardening refers to the selective attenuation of low-energy photons leading to an effect similar to a high-pass filter in electronics. Beam hardening occurs during x-ray attenuation, as higher energy (hard) X-rays penetrate dense materials more effectively than the low energy (soft) X-rays. This has the effect of shifting the peak of the bremsstrahlung radiation towards higher energies. Since monochromatic beams do not exhibit this shift, characteristic peaks -arising from discrete atomic transitions— remain unaffected.
 
-\begin{figure}
-	\includegraphics[width=\linewidth]{typicalxrayspectra.png}
-	\caption{X-ray Spectrum from a x-ray tube with a Tungsten target}
-  \label{fig:basespectra}
-\end{figure}
+To model attenuation through  tissue, energy-dependent linear attenuation coefficients were computed from NIST mass attenuation data. After interpolating these coefficients to match the energy resolution of the spectrum, exponential attenuation was applied using the Beer-Lambert law in Equation~\ref{bl}.
 
-In Figure \ref{fig:basespectra} we can see the sharp characteristic peaks that correspond to Tungsten. Writing code for filtering using NIST data and interpolation to fit the number of data points required., 
-
-\begin{python}
-import pandas as pd
-from scipy.interpolate import interp1d
-
-# Load csv
-bone_data = pd.read_csv("bone.csv", names=["Energy_MeV", "Mu_Rho"], header=None)#
-
-# Convert energy to KeV
-bone_data["Energy_KeV"] = bone_data["Energy_MeV"] * 1000
-
-# Average out duplicates by grouping
-bone_data = bone_data.groupby("Energy_KeV", as_index=False).mean()
-
-# Convert to linear attenuation (mu = mu/rho * rho)
-bone_density = 1.85  # g/cm^3
-bone_data["Mu"] = bone_data["Mu_Rho"] * bone_density  # [cm^-1]
-mu = bone_data["Mu"].to_numpy()
-
-# Create interpolation function for attenuation coefficients
-mu_interp = interp1d(bone_data["Energy_KeV"], bone_data["Mu"], bounds_error=False, fill_value="extrapolate")
-
-mu_at_spectrum_energies = mu_interp(energies)
-
-thickness_cm = 0.5
-I0 = s.get_spk()
-
-I_filtered = I0 * np.exp(-mu_at_spectrum_energies * thickness_cm)
-\end{python}
+Figure \ref{fig:beamhardening} shows beam hardening on the X-ray spectrum. The lower-energy (soft) x-rays are preferentially attenuated, resulting in a spectrum that is skewed toward higher energies. Lower-energy photons are absorbed more readily than high-energy ones. As a result, the transmitted spectrum becomes ”hardened” with its average energy increasing. We also don’t see any hardening for the monochromatic peaks, as monochromatic beams by definition do not change their average energy.
 
 \begin{figure}[H]
-	\includegraphics[width=\linewidth]{beamhardening.png}
-	\caption{Comparing X-ray spectra before and after passing through 0.5cm of bone}
+	\includegraphics[scale=0.6]{beamhardening.png}
+	\caption{Beam hardening visualized by comparing the X-ray spectrum before
+and after passing through 0.5cm of bone. Low-energy components are preferen-
+tially attenuated, resulting in a hardened spectrum.}
   \label{fig:beamhardening}
 \end{figure}
 
-Figure \ref{fig:beamhardening} shows beam hardening on the X-ray spectrum. The lower-energy (soft) x-rays are preferentially attenuated, resulting in a spectrum that is skewed toward higher energies. Lower-energy photons are absorbed more readily than high-energy ones. As a result, the transmitted spectrum becomes "hardened," with its average energy increasing. We also don't see any hardening for the monochromatic peaks, as expected. 
+Quantitatively:
 
-Beam hardening is significant in image reconstruction, as it may result in characteristic artefacts. CT beam hardening artefacts are known as: streaking artefacts, where dark bands appear between dense structures, and cupping artefacts, where the center of a homogeneous object appears less attenuating than the periphery \cite{Murphy_2016}.
+\begin{table}[H]
+\begin{tabular}{
+>{\columncolor[HTML]{000000}}l ll}
+\cellcolor[HTML]{FFFFFF}{\color[HTML]{FFFFFF} }      & \cellcolor[HTML]{000000}{\color[HTML]{FFFFFF} Before Attenuation} & \cellcolor[HTML]{000000}{\color[HTML]{FFFFFF} After Attenuation} \\
+{\color[HTML]{FFFFFF} Peak energy (keV)}             & 39.8                                                              & 49.8                                                             \\
+{\color[HTML]{FFFFFF} Mean energy (keV)}             & 60.27                                                             & 67.27                                                            \\
+{\color[HTML]{FFFFFF} Spectral Hardness Ratio (SHR)} & 0.6110                                                            & 0.7434                                                          
+\end{tabular}
+\end{table}
+The Spectral Hardness Ratio (SHR)-defined as the fraction of photons above 50 keV-increases from 0.6110 to 0.7434, quantitatively confirming that the spectrum becomes harder after transmission. These metrics demonstrate that beam hardening is a measurable shift in the spectrum
+
+This hardening effect is critical in diagnostic imaging, as it alters tissue contrast and can introduce artefacts if not properly corrected in reconstruction algorithms. The most common CT beam hardening artefacts are:
+\begin{itemize}
+	\item Streaking artefacts, where dark bands appear between dense structures
+	\item Cupping artefacts, where the center of a homogeneous object appears less attenuating than the edges
+\end{itemize}
+\cite{Murphy2016}.
+\begin{figure}%
+    \centering
+    \subfloat[\centering CT streak artefact caused by gunshot bullets\cite{GunshotCase}.]{{\includegraphics[width=5cm]{streakingartefact.jpg} }}%
+    \qquad
+    \subfloat[\centering CT cupping artefact, grey matter appears artifactually and symmetrically hypodense\cite{CuppingArtifact}.]{{\includegraphics[width=5cm]{cuppingartefact.jpg} }}%
+    \caption{2 Figures side by side}%
+    \label{fig:example}%
+\end{figure}
 
 \subsection{Phantoms and Sinograms}
 \subsubsection{Generating Phantoms}
-In medical scans, phantoms are used as stand-ins for human tissues to ensure that systems and methods are working correctly. One common such phantom is the Shepp-Logan phantom \cite{Shepp_Logan_1974}. The Shepp-Logan phantom is defined as 10 ellipses with parameters from the original paper \cite{Shepp_Logan_1974} and serves as a model of the human head.
+In medical imaging, phantoms are used as stand-ins for human tissues to test and validate imaging systems and reconstruction algorithms. They allow for controlled experimentation as the 'ground truth' is always known. A widely used model is the Shepp-Logan phantom \cite{Shepp1974}, serving as a model of the human head and defined as 10 ellipses with varying parameters and intensity.
 
-\begin{figure}.
-	\includegraphics[width=\linewidth]{shepplogan.png}
-	\caption{Shepp-Logan head phantom image}
-	\label{fig:shepplogan}
-\end{figure}
+To generate this model, a Python implementation by Jan Hrach~\cite{HrachovecPhantom} was adapted. The phantom is represented as a 2D array with constant attenuation coefficients across the image, making it ideal for examining reconstruction quality under monoenergetic or simplified polychromatic assumptions.
 
-Using Jan Hrach's python code \cite{phantom_py}, I can recreate the Shepp-Logan phantom with constant attenuation coefficients.
+To complement this, a second phantom was constructed with a simplified geometry: a circular region representing soft tissue (low attenuation). Unlike the Shepp–Logan model, this phantom is explicitly designed for use with energy-dependent attenuation data with goals of showing beam hardening artefacts.
 
-Another phantom I created was a simple circle of bone surrounded by a larger circle of soft tissue. This was an easy way to test using the energy dependent attenuation coefficients. The $circlemask$ function is use to define circular regions on the phantom, which can then be assigned with properties for different materials. Using a phantom with simplified geometry allowed for clearer observation of attenuation characteristics.
-
-Python code:\\
-
-\begin{python}
-def circlemask(radii, centre_x, centre_y, width, height):
-    x, y = np.ogrid[:width, :height]
-    mask = (x-centre_x)**2 + (y-centre_y)**2 <= radii**2
-    return mask
-   
-width, height = 180,180
-s = sp.Spek(kvp=150,th=12)
-energies = s.get_k()
-# Load each material from a csv file
-mu_bone = load_mu_data(r"code\bone.csv", density=1.85, energy_range_KeV=energies)
-mu_tissue = load_mu_data(r"code\soft_tissue.csv", density=1.06, energy_range_KeV=energies)
-E=len(energies)
-
-phantom = np.zeros((height, width, E))
-bone_mask = circlemask(10,width//2,height//2,width,height)
-thigh_mask=circlemask(40,width//2,height//2,width,height)
-
-# Background
-phantom[:, :, :] = 0  # broadcast over all pixels
-
-# Thigh region
-phantom[thigh_mask, :] = mu_tissue
-
-# Bone region
-phantom[bone_mask, :] = mu_bone
-\end{python}
-
-Using matplotlib to display these phantoms:
+Circular regions were defined using a Boolean masking function and the phantom was initialized as a 3D array to accommodate energy-resolved attenuation data:
 
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{simplephantom.png}
-	\caption{Left: Shepp-Logan phantom. Right: Circular phantom with central bone inclusion ($\mu$ map at energy bin 50).}
+	\caption{Left: Shepp-Logan phantom. Right: Circular phantom with energy dependent attenuation($\mu$ map at energy bin 50).}
 	\label{fig:phantoms}
 \end{figure}
 
@@ -195,32 +217,18 @@ Each Intensity profile $I_\theta (r)$ is transformed into an attenuation profile
 p_\theta (r) = - \ln \frac{I_\theta (r)}{I_0} = -\int\limits_{L_{(r,\theta)}} \mu \left(r \cos(\theta) - s \sin(\theta),r \sin(\theta) + s \cos(\theta)\right) ds
 \end{align}
 
-This attenuation profile is what our detector measures at each angle. Going back to the circle phantom example, we can write some code to simulate this:
-
-\begin{python}
-# Sum attenuation coefficients along the ray path (top to bottom) for each (width, energy).
-# 'mu_total' is 2D (width, energy), representing total attenuation per ray per energy.
-mu_total = phantom.sum(axis=0)
-
-I = I0 * np.exp(-mu_total * pixel_thickness_cm)
-
-# Sum transmitted intensities across all energies for each detector position.
-# 'incident_intensity' is 1D (width,), representing the final polychromatic projection profile.
-incident_intensity = I.sum(axis=1)
-
-# Visualize detector readout (log form)
-detector_readout= -np.log(incident_intensity + 1e-6)  # add epsilon to avoid log(0)
-\end{python}
+This attenuation profile is what our detector measures at each angle.
 
 Plotting our result we get:
 \begin{figure}[H]
 	\includegraphics[scale=0.6]{detectorreadout.png}
-	\caption{1D detector readout for our circular phantom, we see the increase in attenuation in the middle as we go through the bone.}
+	\caption{1D detector readout for our circular phantom.}
 	\label{fig:detector1d}
 \end{figure}
 
-If we arrange projections from all angles (only $(0,\pi)$ as $(\pi, 2\pi)$ are redundant for parallel beams) side by side as a 2D image, we get a sinogram. We can view this 2D dataset $p(r, \theta)$ for our circular phantom in Figure \ref{fig:sinogramcircle}, this sinogram was generated using scipys ndimage.rotate to simulate the projections. 
-Another, more interesting sinogram can be found from our more complex Shepp-Logan phantom, which we can see in Figure \ref{fig:sinogramshepp}. We can notice sinusoidal curves throughout the image, motivating the name sinogram.
+If we arrange projections from all angles (only $(0,\pi)$ as $(\pi, 2\pi)$ are redundant for parallel beams) side by side as a 2D image, we get a sinogram. We can view this 2D dataset $p(r, \theta)$ for our circular phantom in Figure \ref{fig:sinogramcircle}, this sinogram was generated using scipy.ndimage.rotate to simulate the projections. While convenient, using scipy.ndimage.rotate is not the ideal choice as it introduces interpolation artefacts. This means that the "ray paths" are not perfectly straight lines of integration but rather interpolated paths, which can introduce smoothing or blurring. A more accurate sinogram model would use a more direct ray-tracing algorithm, such as Siddons' \cite{Siddon1985}. However, for this fundamental demonstration, the conceptual understanding provided by this approach is sufficient.
+
+Another, more interesting sinogram can be found from our more complex Shepp-Logan phantom, which we can see in Figure \ref{fig:sinogramshepp}. We can notice sinusoidal curves throughout the image, motivating the name sinogram. Each point or localized structure in the (x,y) domain traces a sinusoidal path in the sinogram because the distance $r$ from the origin to the projection line changes with angle according to a sine-cosine relationship. Specifically, a fixed point $(x_0, y_0)$ in the object maps to a curve defined by $r = x_0 \cos \theta + y_0 \sin \theta$, which is inherently sinusoidal in $\theta$.
 
 \begin{figure}[H]
 	\includegraphics[scale=0.5]{sinogramcircle.png}
@@ -263,35 +271,17 @@ In practice, we implement this by:
 	\item Summing the results across all angles
 \end{itemize}
 
-Or in python code:
-
-\begin{python}
-# Initialize reconstruction
-reconstruction = np.zeros((width, height))
-
-# Backproject each angle's projection
-for i, angle in enumerate(angles):
-    # Expand the 1D projection into a 2D image by smearing along the angle
-    projection = sinogram[i]
-    expanded = np.tile(projection, (width, 1))  # Repeat along y-axis
-    
-    # Rotate back to original angle and accumulate
-    rotated_back = ndimage.rotate(expanded, -angle, reshape=False, order=1)
-    reconstruction += rotated_back
-
-# Normalize
-reconstruction /= len(angles)
-\end{python}
-
 \begin{figure}[H]
 	\includegraphics[width=\linewidth]{sbpreconstructions.png}
 	\caption{Simple Back Projection Reconstructions for our 2 phantoms.}
 	\label{fig:SBPreconstructions}
 \end{figure}
 
-This roughly reconstructs the structure of the phantoms and we can make out some of the internal structure in both of our phantoms. Both of our phantoms are blurred and have pronounced dark corners. The dark corners are a known artefact, as they receive fewer ray contributions when we rotate around but to understand the blurring we need to requires further mathematical understanding.
+This roughly reconstructs the structure of the phantoms and we can make out some of the internal structure in both of our phantoms. Both of our phantoms are blurred and have pronounced dark corners. 
 
-Doing more quantitative analysis on how our Shepp-Logan reconstruction compares to the original we can compare Mean Square Error (MSE) and Structural Similarity Index Measure (SSIM) \cite{Sara_Akter_Uddin_2019}, for our Shepp-Logan:
+The dark corners can be explained quantitatively, as they receive fewer ray contributions when we rotate around but to understand the blurring we need to requires further mathematical understanding. In our circle phantom, we can see a cupping artefact as the centre is brighter than it should be, due to ray-hardening.
+
+Doing more quantitative analysis on how our Shepp-Logan reconstruction compares to the original we can compare Mean Square Error (MSE) and Structural Similarity Index Measure (SSIM) \cite{Sara2019}, for our Shepp-Logan:
 \begin{itemize}
 	\item MSE: 0.3778
 	\item SSIM: 0.3130
@@ -299,11 +289,14 @@ Doing more quantitative analysis on how our Shepp-Logan reconstruction compares 
 
 In order to get these figures I ensured that both the original image and reconstruction was normalised, and applied a circle masking function to ensure we were only comparing the significant parts of the image and not the darkened corners.
 
-MSE measures the average squared difference between actual and ideal pixel values. Since the normalized image ranges from 0 to 1, an MSE of 0.3778 is relatively high, indicating a low-fidelity reconstruction.
+MSE measures the average squared difference between actual and ideal pixel values. Since the normalized image ranges from 0 to 1, an MSE of 0.3778 is very high, indicating a substantial loss of pixel-wise fidelity.
 
-SSIM evaluates image quality by considering luminance, contrast and structural information. A value close to 1 would imply the 2 images are similar, so 0.3130 suggests significant degradation in these areas (which matches what we observe).
+SSIM evaluates image quality by considering luminance, contrast and structural information. A value close to 1 would imply the 2 images are similar, so 0.3130 suggests significant degradation in these areas (which matches what we observe). The threshhold is usually $> 0.9$ for high quality reconstructions.
 
-Overall quantitative image comparison is a tricky topic and both of these metrics have issues \cite{nilsson2020understandingssim}, but they still clearly indicate the need for a more sophisticated reconstruction algorithm.
+Overall quantitative image comparison is a tricky topic and both of these metrics have issues \cite{Nilsson2020}, but they still clearly indicate the need for a more sophisticated reconstruction algorithm. As we can see, simple back projection cannot be the inverse transformation we are looking for, the observed blurring are not just empirical observations but direct consequences of the mathematical operation underlying SBP.
+
+\subsection{Fourier Slice Theorem and Filtered Back Projection}
+TBC
 
 \bibliography{References}
 \bibliographystyle{ieeetr}
