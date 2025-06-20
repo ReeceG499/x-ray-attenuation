@@ -21,6 +21,7 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}
 
 \begin{document}
 \maketitle
@@ -189,6 +190,7 @@ Circular regions were defined using a Boolean masking function and the phantom w
 \end{figure}
 
 \subsubsection{Sinograms}
+\label{sinogramsec}
 A sinogram is a 2D representation of the projection data acquired in a CT scan, where each row corresponds to a 1D projection taken at a specific angle. Before we can reconstruct the cross-sectional image of the scanned object, the initial x-ray attenuation measurements are compiled into this sinogram format.
 
 To understand image reconstruction, we need to define projections. A projection in CT scans represents the total attenuation of x-rays along a specific path of the object, mathematically this is represented as a line integral. At an angle $\theta$, the parallel beam geometry represents a new coordinate system $(r, s)$ in which the intensity profile $I_\theta (r)$ is measured. Other beam geometries such as fan or cone geometries require different methodology.
@@ -244,11 +246,12 @@ Another, more interesting sinogram can be found from our more complex Shepp-Loga
 
 The transformation of a function $\mu (x,y)$ into $p(r, \theta)$, is known as the Radon transform defined here as:
 \begin{definition}
-For a function $\mu(x,y)$ defined on $\mathbb{R}^2$, the Radon transform of $\mu$, denoted as $R\left\{\mu \right\}$, is defined as
+For a function $\mu(x,y)$ defined on $\mathbb{R}^2$, the Radon transform of $\mu$, denoted as $\mathcal{R}\left\{\mu \right\}$, is defined as
 \begin{align*}
-p(r, \theta) &= R \left\{ \mu(x,y) \right\} \notag \\
+p(r, \theta) &= \mathcal{R} \left\{ \mu(x,y) \right\} \notag \\
              &= \int_{-\infty}^{\infty} \mu(r \cos\theta - s \sin\theta,\; r \sin\theta + s \cos\theta) \, ds
 \end{align*}
+\label{radon}
 \end{definition}
 We can therefore phrase the problem of CT reconstruction as finding an inversion formula for the Radon transform \cite{Beatty2012}. 
 
@@ -296,7 +299,85 @@ SSIM evaluates image quality by considering luminance, contrast and structural i
 Overall quantitative image comparison is a tricky topic and both of these metrics have issues \cite{Nilsson2020}, but they still clearly indicate the need for a more sophisticated reconstruction algorithm. As we can see, simple back projection cannot be the inverse transformation we are looking for, the observed blurring are not just empirical observations but direct consequences of the mathematical operation underlying SBP.
 
 \subsection{Fourier Slice Theorem and Filtered Back Projection}
-TBC
+\subsubsection{The Fourier Slice Theorem}
+To rigorously understand why simple back projection leads to blurring, we first prove the Fourier slice theorem, which gives a relationship between the one dimensional Fourier transform of the Radon transform and the two dimensional Fourier transform.
+
+Recall,
+\begin{definition}
+For a given absolutely integrable function $f$ on $\mathbb{R}$ the Fourier transform of $f$ given by $\mathcal{F}f$ is defined for every real number $\omega$ as:
+$$
+\mathcal{F}f(\omega) = \int_{-\infty}^{\infty} f(x) e^{- i \omega x}dx
+$$
+\end{definition}
+
+We also define the inverse Fourier transform as:
+
+\begin{definition}
+For a given absolutely integrable function $f$ on $\mathbb{R}$ we define the inverse Fourier transform of $f$ given by $\mathcal{F}^{-1}f$ evaluated at $x$ as:
+$$
+\mathcal{F}^{-1}f(x) = \frac{1}{2 \pi} \int_{-\infty}^{\infty} f(\omega) e^{i \omega x}d\omega
+$$
+\end{definition}
+
+Analogously in 2 dimensions:
+\begin{definition}
+For a given absolutely integrable function $g$ on $\mathbb{R} ^ 2$ the 2 dimensional Fourier transform of $g$ given by $\mathcal{F}_2 g$ is defined all $X, Y \in \mathbb{R} ^ 2$ as:
+$$
+\mathcal{F}_2 g(X, Y) =  \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} g(x, y) e^{- i (x X + yY}dxdy
+$$
+\label{2dfourier}
+\end{definition}
+
+We similarly define the inverse Fourier transform on $\mathbb{R}^2$.
+
+\begin{definition}
+For a given absolutely integrable function $g$ on $\mathbb{R} ^ 2$ the 2 dimensional inverse Fourier transform at a point $(x,y)$ denoted by $\mathcal{F}_2 ^{-1} g(x,y)$ is given as:
+$$
+\mathcal{F}_2 ^{-1} g(x, y) = \frac{1}{4 \pi^2} \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} g(X, Y) e^{i (x X + yY)}dxdy
+$$
+\end{definition}
+
+We can now state the Fourier slice theorem.
+\begin{theorem}
+For an absolutely integrable function $f$ defined on $\mathbb{R}^2$ and all $S \in \mathbb{R}$ and all $\theta \in \left[ 0, 2\pi \right)$,
+$$
+\mathcal{F}_2 f(S \cos \theta, S \sin \theta) = \mathcal{F}(\mathcal{R}f)(S, \theta)
+$$
+\end{theorem}
+\begin{proof} 
+First, by definition \ref{2dfourier}:
+$$
+\mathcal{F}_2 f(S \cos \theta, S \sin \theta) =  \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(x, y) e^{- i S(x \cos \theta + y \sin \theta )}dxdy
+$$ \label{fslice}
+We can know  implement the change of variables defined in Section \ref{sinogramsec} \\
+$x(s) = r \cos \theta - s \sin \theta$ and $y(s) = r \sin \theta + s \cos \theta$, where $r = x \cos \theta + y \sin \theta$
+Looking at the determinant for the Jacobian of $x(s)$ and $y(s)$:
+$$
+\det \begin{pmatrix}
+       \frac{\partial x}{\partial r} & \frac{\partial x}{\partial s} \\
+       \frac{\partial y}{\partial r} & \frac{\partial y}{\partial s}
+   \end{pmatrix} = 1
+$$
+So we can say, $dsdr = dxdy$. We therefore write the right side of equation \ref{fslice} as:
+$$
+\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} f(r \cos \theta - s \sin \theta, r \sin \theta + s \cos \theta) e^{- i S r}dsdr
+$$
+Which we can rearrange as:
+$$
+\int_{-\infty}^{\infty} \left( \int_{-\infty}^{\infty} f(r \cos \theta - s \sin \theta, r \sin \theta + s \cos \theta)ds  \right) e^{- i S r}dr
+\label{innerintegral}
+$$
+The inner integral is the Radon transform of $f$ as defined by Definition \ref{radon}. Therefore equation \ref{innerintegral} can be written as:
+$$
+\int_{-\infty}^{\infty} \left( \mathcal{R} f (r, \theta) \right) e^{- i S r}dr
+$$
+Which is just the definition of the Fourier transform of $\mathcal{R} f$ evaluated at $(S, \theta)$\\
+Therefore:
+$$
+\mathcal{F}_2 f(S \cos \theta, S \sin \theta) = \mathcal{F}(\mathcal{R}f)(S, \theta)
+$$
+\end{proof}
+
 
 \bibliography{References}
 \bibliographystyle{ieeetr}

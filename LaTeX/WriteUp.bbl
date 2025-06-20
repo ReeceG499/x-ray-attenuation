@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{Tafti2023}
+D.~Tafti and C.~V. Maani, ``Physics, x-ray production,'' 2023.
+\newblock Book chapter in StatPearls [Internet].
+
+\bibitem{Mason2018}
+J.~Mason, {\em Quantitative Cone-Beam Computed Tomography Reconstruction for
+  Radiotherapy Planning}.
+\newblock Phd thesis, 11 2018.
+
+\bibitem{CharacteristicRadiation}
+``Characteristic radiation.''
+\newblock Radiopaedia reference article
+  https://radiopaedia.org/articles/characteristic-radiation Accessed:
+  [15/06/2025.
+
+\bibitem{Filters}
+Radiopaedia, ``Filters,'' 2023.
+\newblock Radiopaedia reference article
+  https://radiopaedia.org/articles/filters?lang=gb Accessed: [15/06/2025].
+
+\bibitem{NISTXRay}
+``X-ray mass attenuation coefficients,'' 2023.
+
+\bibitem{Murphy2016}
+A.~Murphy, ``Beam hardening,'' 10 2016.
+\newblock Radiology reference article.
+
+\bibitem{GunshotCase}
+``Gunshot wound to face.''
+\newblock Case study accesed at
+  https://radiopaedia.org/cases/gunshot-wound-to-face-old-1.
+
+\bibitem{CuppingArtifact}
+``Ct cupping artifact.''
+\newblock Case study accessed at
+  https://radiopaedia.org/cases/ct-cupping-artifact.
+
+\bibitem{Shepp1974}
+L.~A. Shepp and B.~F. Logan, ``The {Fourier} reconstruction of a head
+  section,'' {\em IEEE Transactions on Nuclear Science}, vol.~21, pp.~21--43, 6
+  1974.
+
+\bibitem{HrachovecPhantom}
+J.~Hrachovec, ``phantom.py,'' n.d.
+\newblock Python implementation of Shepp-Logan phantom.
+
+\bibitem{Siddon1985}
+R.~L. Siddon, ``Prism representation: A {3D} ray-tracing algorithm for
+  radiotherapy applications,'' {\em Physics in Medicine and Biology}, vol.~30,
+  pp.~817--824, 8 1985.
+
+\bibitem{Beatty2012}
+J.~Beatty, ``The radon transform and the mathematics of medical imaging,''
+  honours thesis, Colby College, 2012.
+
+\bibitem{Sara2019}
+U.~Sara, M.~Akter, and M.~Uddin, ``Image quality assessment through {FSIM},
+  {SSIM}, {MSE} and {PSNR}—a comparative study,'' {\em Journal of Computer
+  and Communications}, vol.~7, no.~3, pp.~8--18, 2019.
+
+\bibitem{Nilsson2020}
+J.~Nilsson and T.~Akenine-Möller, ``Understanding {SSIM},'' {\em arXiv
+  preprint}, 2020.
+
+\end{thebibliography}
