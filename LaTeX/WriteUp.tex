@@ -70,7 +70,7 @@ The simulation is composed of five stages, as illustrated in Figure~\ref{fig:pip
 \draw[arrow] (sinogram) -- (reconstruction);
 
 \end{tikzpicture}
-\caption{Overview of the CT simulation pipeline. Each stage builds toward energy-aware image reconstruction, enabling future extensions into advanced correction and reconstruction techniques.}
+\caption{Project Overview}
 \label{fig:pipeline}
 \end{figure}
 
@@ -264,6 +264,7 @@ Let $p = p(r, \theta)$. We define the back projection, $\mathcal{B} p$, at a poi
 $$
 \mathcal{B} p(x,y) = \frac{1}{\pi} \int_{0}^{\pi} p(x \cos(\theta) + y \sin(\theta), \theta) d\theta
 $$
+\label{backprojection}
 \end{definition}
 
 In practice, we implement this by:
@@ -323,7 +324,7 @@ Analogously in 2 dimensions:
 \begin{definition}
 For a given absolutely integrable function $g$ on $\mathbb{R} ^ 2$ the 2 dimensional Fourier transform of $g$ given by $\mathcal{F}_2 g$ is defined all $X, Y \in \mathbb{R} ^ 2$ as:
 $$
-\mathcal{F}_2 g(X, Y) =  \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} g(x, y) e^{- i (x X + yY}dxdy
+\mathcal{F}_2 g(X, Y) =  \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} g(x, y) e^{- i (x X + yY)}dxdy
 $$
 \label{2dfourier}
 \end{definition}
@@ -343,6 +344,7 @@ For an absolutely integrable function $f$ defined on $\mathbb{R}^2$ and all $S \
 $$
 \mathcal{F}_2 f(S \cos \theta, S \sin \theta) = \mathcal{F}(\mathcal{R}f)(S, \theta)
 $$
+\label{cslice}
 \end{theorem}
 \begin{proof} 
 First, by definition \ref{2dfourier}:
@@ -378,6 +380,73 @@ $$
 $$
 \end{proof}
 
+\begin{figure}[H]
+	\includegraphics[width=\linewidth]{fourierslicetheorem.jpg}
+	\caption{Fourier slice theorem visualisation. We can see the relationship between the projections 1D Fourier transform and the functions 2D Fourier transform. }
+	\label{fourierslicetheorem}
+\end{figure}
+
+This relationship is incredibly useful in medical imaging, in words: the one dimensional Fourier transform of the projection of a function (recall this is what the Radon transform is) is equal to a slice through the origin, parallel to the line we projected our function on of the 2D Fourier transform of the function. This relationship is visualised in figure \ref{fourierslicetheorem}.
+
+\subsubsection{The Filtered Back Projection Formula}
+We can use this to define the filtered back projection formula.
+\begin{theorem}
+For an absolutely integrable function $f$ defined on $\mathbb{R}^2$
+$$
+f(x,y) = \frac{1}{2} \mathcal{B} \left\lbrace \mathcal{F}^{-1} \left[ |S| \mathcal{F} \left( \mathcal{R}f \right) \left( S, \theta \right) \right] \right\rbrace (x,y)
+$$
+\end{theorem}
+\begin{proof}
+For the 2 dimensional Fourier transform and its inverse:
+\begin{align}
+f(x,y) &= \mathcal{F}_2^{-1} \mathcal{F}_2 f(x,y) \\
+&= \frac{1}{4 \pi^2} \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \mathcal{F}_2 f(X, Y) e^{i (x X + yY)}dXdY
+\end{align}
+We can then use a change of variables from Cartesian to polar coordinates.
+$X = S \cos \theta$, $Y = S \sin \theta$, with Jacobian determinant $dXdY = |S| dS  d\theta$ to get:
+$$
+f(x,y) = \frac{1}{4 \pi^2} \int_{0}^{\pi} \int_{-\infty}^{\infty} \mathcal{F}_2 f(S \cos \theta, S \sin \theta) e^{i S(x \cos \theta + y \sin \theta)} |S|dSd\theta
+$$
+Using the Central Slice Theorem \ref{cslice} we see:
+$$
+f(x,y) = \frac{1}{4 \pi^2} \int_{0}^{\pi} \int_{-\infty}^{\infty} \mathcal{F}(\mathcal{R} f(S , \theta)) e^{i S(x \cos \theta + y \sin \theta)} |S|dSd\theta
+$$
+Analysing the inner integral:
+\begin{align*}
+\int_{-\infty}^{\infty} \mathcal{F}(\mathcal{R} f(S , \theta)) e^{i S(x \cos \theta + y \sin \theta)} |S|dS \\
+= 2\pi \left( \frac{1}{2 \pi} \int_{-\infty}^{\infty} \mathcal{F}(\mathcal{R} f(S , \theta)) e^{i S(x \cos \theta + y \sin \theta)} |S|dS \right) \\
+= 2\pi \mathcal{F}^{-1} \left[ |S| \mathcal{F} \left( \mathcal{R}f \right) \left( S, \theta \right) \right] (x \cos \theta + y \sin \theta, \theta)
+\end{align*}
+
+Which allows us to write:
+$$
+f(x,y) = \frac{1}{2 \pi} \int_{0}^{\pi} \mathcal{F}^{-1} \left[ |S| \mathcal{F} \left( \mathcal{R}f \right) \left( S, \theta \right) \right] (x \cos \theta + y \sin \theta, \theta) d\theta
+$$
+Which using our Backprojection formula from Definition \ref{backprojection} we can simplify to:
+
+$$
+f(x,y) = \frac{1}{2} \mathcal{B} \left\lbrace \mathcal{F}^{-1} \left[ |S| \mathcal{F} \left( \mathcal{R}f \right) \left( S, \theta \right) \right] \right\rbrace (x,y)
+$$
+\end{proof}
+
+We call the $|S|$ multiplier in this formula a filter. We can actually get this formula in a simpler form by supposing there exists some function $\phi(t)$ such that $\mathcal{F}\phi (S) = |S|$ and say:
+$$
+f(x,y) = \frac{1}{2} \mathcal{B} \left\lbrace \mathcal{F}^{-1} \left[ \mathcal{F}\phi \cdot \mathcal{F} \left( \mathcal{R}f \right) \left( S, \theta \right) \right] \right\rbrace (x,y)
+$$
+Using the Convolution Theorem \cite{wolfram_convolution} we therefore have:
+\begin{align*}
+f(x,y) &= \frac{1}{2} \mathcal{B} \left\lbrace \mathcal{F}^{-1} \left[ \mathcal{F} \left(\phi \star \mathcal{R}f \right) \left( S, \theta \right) \right] \right\rbrace (x,y) \\
+&= \frac{1}{2} \mathcal{B} \left(\phi \star \mathcal{R}f \right) (x,y)
+\end{align*}
+
+This is great! We just need to filter our measured data $\mathcal{R}f$ with our function $\phi$ and then apply the back projection formula. However, there are no functions $\phi$ that satisfies $\mathcal{F} \phi(S) = |S|$, Consider:
+$$
+\mathcal{F}\phi(S) = \int_{-\infty}^{\infty} \phi(x)e^{-iSx} dx
+$$
+in the limit $S \to \infty$, $\mathcal{F}\phi \to 0$, but for the absolute value function $|S| \to \infty$. Meaning we cannot find a suitable function $\phi$ that satisfies for all $S$, 
+$$\mathcal{F}\phi(S) = |S|$$.
+
+\subsubsection{Practical Filtering}
 
 \bibliography{References}
 \bibliographystyle{ieeetr}
