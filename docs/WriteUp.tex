@@ -17,6 +17,7 @@
 \usepackage{caption}
 \usetikzlibrary{positioning, arrows.meta}
 \usepackage{subfig}
+\usepackage{bbm}
 
 
 \theoremstyle{definition}
@@ -27,13 +28,13 @@
 \maketitle
 
 \begin{abstract}
-This project aims to computationally demonstrate the fundamental principles of x-ray Computed Tomography (CT), from x-ray generation and material attenuation to projection acquisition and image reconstruction.
+This project aims to computationally demonstrate the fundamental principles of x-ray Computed Tomography (CT), from x-ray generation and material attenuation to creating projections and image reconstruction.
 \end{abstract}
 
 \section{Introduction}
-Computed tomography (CT) is a medical imaging technique that constructs cross-sectional representations of the human body by acquiring X-ray projections at multiple angles. These projections are mathematically combined to reconstruct internal anatomical structures.
+Computed tomography (CT) is a medical imaging technique that constructs cross-sectional representations of the human body by acquiring X-ray projections at multiple angles. These projections are mathematically combined to reconstruct internal structures.
 
-The core objective is to build a simplified computational pipeline that accurately captures the essential physics and mathematics underpinning CT. A particular focus is placed on incorporating energy-dependent attenuation coefficients, derived from NIST data, to realistically model materials such as bone and soft tissue. This approach allows for a practical demonstration and analysis of beam hardening.
+The core objective is to build a simplified computational pipeline that accurately captures the physics and mathematics underpinning CT. I also go over using NIST data to model energy dependent attenuation, to realistically model materials such as bone and soft tissue. This approach allows for a practical demonstration and analysis of beam hardening.
 
 \section{Project Overview}
 The simulation is composed of five stages, as illustrated in Figure~\ref{fig:pipeline}:
@@ -447,7 +448,33 @@ in the limit $S \to \infty$, $\mathcal{F}\phi \to 0$, but for the absolute value
 $$\mathcal{F}\phi(S) = |S|$$.
 
 \subsubsection{Practical Filtering}
+Despite these issues, we don't actually need infinite frequencies when working with real data and the $|S|$ factor would amplify any high-frequency noise in our data infinitely. To avoid this we zero out the filter above a certain band limi, $L$t.
+We define the Ram-Lak (ramp) filter as:
+$$S'(\omega) = |\omega| \cdot \mathbbm{1}_{[-L,L]}$$
+Where $\mathbbm{1}_{[-L,L]}$ is the indicator function between $-L$ and $L$. Other filters such as the Hann filter multiply this by some smoothing factor. In the case of the Hann filter this factor is:
+$\frac{1 + \cos \left( \pi \omega / L \right)}{2}$, which filters out noise.
 
+\begin{figure}[H]
+	\includegraphics[scale=0.7]{fbpcircle.png}
+	\caption{Fourier back projection (Ram-Lak filter) of our circle phantom, note the lack of beam hardening but the dark ring around the outside. We also see a square grid pattern.}
+\end{figure}
+
+We see that using this filter fixes our beam hardening issue, but there is now this ring artefact around the edge of our image - this is a manifestation of the Gibbs phenomenon \cite{RadiopaediaGibbs} and is caused by the boundaries in our image. Applying smoothed filters such as the Hann filter will help to mitigate these artefacts.
+
+\begin{figure}[H]
+	\includegraphics[scale=0.7]{fbpshepp.png}
+	\caption{Fourier back projection (Ram-Lak filter) of our shepp logan phantom, note the blur is gone but we get streaking artefacts throughout.}
+\end{figure}
+
+\section{Conclusion}
+Overall, I have set out a framework for introductory projects in CT imaging and back projection techniques. Possible avenues for further study could be:
+\begin{enumerate}
+\item Implementing more filters,
+\item Improving efficiency for larger (or 3D) phantoms,
+\item Implementing algebraic reconstruction techniques (becoming the industry standard as it allows for lower radiation doses in patients).
+\item Implementing Fan-beam, Cone-beam, and helical reconstruction.
+\end{enumerate}
+All code is available on GitHub at \url{github.com/ReeceG499/ct-simulation-project} and I have tried to write code that is scalable, but readable for beginners.
 
 \bibliography{References}
 \bibliographystyle{ieeetr}

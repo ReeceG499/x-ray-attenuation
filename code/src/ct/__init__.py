@@ -16,6 +16,7 @@ Main Components:
 from .phantom import SheppLoganPhantom
 from .projection import radon_transform, parallel_project
 from .reconstruction import simple_backprojection
+from .reconstruction import filtered_backprojection
 from .pipeline import run_ct_simulation
 
 __all__ = [
@@ -23,5 +24,6 @@ __all__ = [
     'radon_transform',
     'parallel_project',
     'simple_backprojection',
+    'filtered_backprojection',
     'run_ct_simulation'
 ]

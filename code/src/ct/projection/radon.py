@@ -1,41 +1,19 @@
 import numpy as np
-import scipy
+from skimage.transform import radon
 
 def radon_transform(image: np.ndarray, 
                    angles: np.ndarray) -> np.ndarray:
     """
-    Pure Radon transform without detector modeling
+    Parallel-beam projection using scikit-image's accurate Radon transform 
+    (simplified as nnumpys rotate was giving issues).
     
     Args:
         image: 2D numpy array (square shape)
         angles: Projection angles in radians
-        
     Returns:
-        Sinogram (angles x detector_pixels)
+        Sinogram (num_angles x detector_pixels)
     """
-    size = image.shape[0]
-    sinogram = np.zeros((len(angles), size))
-
-    for i, angle in enumerate(angles):
-        rotated = scipy.ndimage.rotate(image, np.degrees(angle), 
-                                      reshape=False, order=1)
-        sinogram[i] = rotated.sum(axis=0)
-        
+    angles_deg = np.degrees(angles)
+    sinogram = radon(image, theta=angles_deg, circle=False) 
+    
     return sinogram
-
-def parallel_project(image: np.ndarray,
-                    angles: np.ndarray,
-                    detector_size: int) -> np.ndarray:
-    """
-    Scanner-realistic parallel-beam projection
-    
-    Args:
-        detector_size: Number of detector elements
-    """
-    # Simple downsampling for detector resolution
-    if detector_size != image.shape[0]:
-        image = scipy.ndimage.zoom(image, 
-                                  detector_size/image.shape[0], 
-                                  order=1)
-    
-    return radon_transform(image, angles)

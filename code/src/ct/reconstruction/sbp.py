@@ -12,28 +12,34 @@ def simple_backprojection(sinogram: np.ndarray,
         
     Returns:
         Reconstructed image (square array)
-        
-    Note:
-        This is an unfiltered backprojection that will produce a blurred image.
-        Use filtered_backprojection for clinical-quality reconstructions.
     """
-    num_angles, num_bins = sinogram.shape
-    size = num_bins  # Assume square reconstruction
-    reconstruction = np.zeros((size, size))
+    num_angles, num_detectors = sinogram.shape
+
+    image_size = num_detectors
     
-    # Convert angles to degrees for rotation function
-    angles_deg = np.degrees(angles)
-    
-    for i, angle in enumerate(angles_deg):
-        # Create backprojection for this angle
-        backproj = np.tile(sinogram[i], (size, 1))
+    reconstruction = np.zeros((image_size, image_size), dtype=np.float32)
+
+    x = np.arange(image_size) - image_size / 2
+    y = np.arange(image_size) - image_size / 2
+    X, Y = np.meshgrid(x, y)
+
+    detector_center = (num_detectors - 1) / 2.0 
+
+    for i, angle in enumerate(angles):
+        current_projection = sinogram[i, :]
+
+        s_prime = X * np.cos(angle) + Y * np.sin(angle)
         
-        # Rotate back to original orientation
-        # Note: Use negative angle to reverse the projection rotation
-        rotated = rotate(backproj, -angle, reshape=False, order=1)
+        detector_indices_float = s_prime + detector_center 
+
+        detector_indices = np.arange(num_detectors)
+
+        interpolated_values = np.interp(
+            detector_indices_float.flatten(),
+            detector_indices, 
+            current_projection 
+        ).reshape(image_size, image_size)
         
-        # Add to reconstruction
-        reconstruction += rotated
-    
-    # Normalize by number of projections
+        reconstruction += interpolated_values
+
     return reconstruction / num_angles
